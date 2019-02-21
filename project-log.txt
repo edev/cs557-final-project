@@ -1,0 +1,4 @@
+Install Haskell Stack
+Create a new scaffolded Yesod website
+Install Yesod and build libraries
+- Initial impression: Where Ruby on Rails is friendly and says, "Hey, let's build a website, and let's make it as beautiful and joyful a process as possible," Yesod seems to pronounce loudly and clearly, "WE WILL BUILD A WEBSITE, AND WE WILL DO SO CORRECTLY." 
