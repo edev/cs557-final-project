@@ -2,3 +2,11 @@ Install Haskell Stack
 Create a new scaffolded Yesod website
 Install Yesod and build libraries
 - Initial impression: Where Ruby on Rails is friendly and says, "Hey, let's build a website, and let's make it as beautiful and joyful a process as possible," Yesod seems to pronounce loudly and clearly, "WE WILL BUILD A WEBSITE, AND WE WILL DO SO CORRECTLY." 
+Resources and type-safe URLs:
+  Yesod creates a datatype for each resource, which lets us write, for instance, @{HomeR} to create a link to the HomeR resource that is compile-time checked. This begs the question: how do we handle user-defined (and thus compile-time-unknown) pages, such as pages stored in a database?
+  Answer: routes can accept parameters. 
+  This makes changing routes as simple as ... changing routes. As long as all links use type-safe URLs, Yesod will auto-generate correct paths for your refactored routes. So if you change from /a/b/c to /d, you don't need to worry about finding all instances of /a/b/c and updating them.
+Chapter: basics
+  Covers a lot of what feels like boilerplate, but it's really how Yesod is configured to harness the power of Haskell. It goes over the basics of how the authors created a Web framework within the confines of Haskell.
+  Most of our code will go in Handler functions.
+Next up: read chapter "Shakespearean Templates" and create a Shakespearean-templated site/layout!
