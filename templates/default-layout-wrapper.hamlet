@@ -1,29 +1,22 @@
-$newline never
-\<!doctype html>
-\<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
-\<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
-\<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
-\<!--[if gt IE 8]><!-->
-<html class="no-js" lang="en"> <!--<![endif]-->
+\<!--$newline never-->
+$doctype 5
+<html>
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>#{pageTitle pc}
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <title>#{pageTitle pc} - Sharing God's Bounty
+    <meta name="description" content="Sharing God's Bounty is a Sacramento area non-profit organization providing free, hot meals to those in need every Tuesday night.">
+    <meta name="keywords" content="Sharing God's Bounty, Sharing God's Bounty Sacramento, Sacramento soup kitchen, Sacramento food closet, Sacramento free food, Sacramento free dinner">
 
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-
+    \<!-- stylesheet, JS, and CSRF tags went here on Rails -->
     ^{pageHead pc}
 
-    \<!--[if lt IE 9]>
-    \<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    \<![endif]-->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js">
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.0.3/js.cookie.min.js">
+    \<!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js">-->
+    \<!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.0.3/js.cookie.min.js">-->
 
     \<!-- Bootstrap-3.3.7 compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous">
+    \<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous">-->
 
     <script>
       /* The `defaultCsrfMiddleware` Middleware added in Foundation.hs adds a CSRF token to the request cookies. */
@@ -44,7 +37,7 @@ $newline never
       }
 
     <script>
-      document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
+      /* document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js'); */
   <body>
     ^{pageBody pc}
 
