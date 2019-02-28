@@ -10,3 +10,12 @@ Chapter: basics
   Covers a lot of what feels like boilerplate, but it's really how Yesod is configured to harness the power of Haskell. It goes over the basics of how the authors created a Web framework within the confines of Haskell.
   Most of our code will go in Handler functions.
 Next up: read chapter "Shakespearean Templates" and create a Shakespearean-templated site/layout!
+  Migrate main HTML template, creating a list of features snipped out:
+    Christmas mode
+    Mobile menu
+    Meals served & last meal
+    Announcements
+    Main menu
+    Flash notice and alert
+    Footer: current year
+    Footer: login link

@@ -1,3 +1,40 @@
+<!-- SECTION: Bounty stuff (obviously WIP) -->
+<nav .mobile>
+  <ul>
+    <li>Menu items go here. 
+  <h2>
+    Menu
+
+<div #pageContainer>
+  <header .masthead>
+    \<image class="logo" src="@{StaticR img_logo_png}" alt="Sharing God's Bounty logo, a cornucopia originally designed in the 1980s" height=200 />
+    <section .find-us>
+      <a href="http://maps.google.com/maps?q=2320+El+Camino+Avenue,+Sacramento,+CA&amp;hl=en&amp;vpsrc=0&amp;hnear=2320+El+Camino+Ave,+Sacramento,+California+95825&amp;t=h&amp;z=17">
+        <img src="@{StaticR img_staticmap_png}" alt="Map to Saint Philomene's Church" />
+      <h2>Where we serve
+      <p>2320 El Camino Ave<br />
+         Sacramento, CA 95821
+      
+      <h2>When we serve
+      <p>Each Tuesday from 6 to 7 PM<br />
+      
+      <h2>Last Tuesday
+      <p>We served meals_served plates of last_meal.
+
+  <article .main-story #story>
+    <div #nav-content-wrapper>
+      <nav .primary>
+        <ul>
+          <li>Main menu goes here.
+
+      <div .content-area>
+        ^{widget}
+
+  <footer>
+    <p>&copy; (right now) Sharing God's Bounty. All rights reserved.
+    <p>
+      <a href="#">Admin login
+<!-- SECTION: Default Yesod stuff. -->
 
 <!-- Static navbar -->
 <nav .navbar.navbar-default.navbar-static-top>
