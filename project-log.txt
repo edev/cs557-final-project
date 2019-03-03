@@ -19,3 +19,34 @@ Next up: read chapter "Shakespearean Templates" and create a Shakespearean-templ
     Flash notice and alert
     Footer: current year
     Footer: login link
+  Migrate main CSS stylesheet to Julius:
+    Integrate variables where appropriate
+    Convert image URLs to StaticR resources for compile-time safety
+    Nest CSS with shared tags (e.g. all .masthead selectors)
+    Mixins:
+      - Can't use the Yesod book's quasi-quoters readily in the scaffolded Yesod site, either in the Lucius file or in src/Foundation.hs (where defaultLayout is defined), because I need to annotate a type manually to deal with string overloading (Text vs. [char]), and I can't easily find the type of the QuasiQuoter used (because it far exceeds my level of knowledge of Haskell, GHCI, QuasiQuoters, and Yesod). 
+      - Google doesn't have any usable documentation on this that I've found.
+      - The Yesod wiki seems to be broken
+      - The LTS build of Yesod appears to be over 5 years old and appears to predate this: https://www.yesodweb.com/blog/2013/07/runtime-lucius-mixins
+      - Because of either Stack or Yesod's package management, I can't import Text.Lucius from GHCI to check the type.
+      - However, I eventually realized that I could trick Stack/Yesod into telling me the correct type simply by writing a dummy type and checking the 'Expected' output! Oputput:
+              • Couldn't match expected type ‘Mixin’ with actual type ‘Int’
+              • In the first argument of ‘Text.Internal.Css.CDMixin’, namely
+                  ‘(centering "200px")’
+                In the expression: Text.Internal.Css.CDMixin (centering "200px")
+                In the expression:
+                  ((Text.Shakespeare.Base.DerefBranch
+                      (Text.Shakespeare.Base.DerefIdent
+                         (Text.Shakespeare.Base.Ident "centering")))
+                     (Text.Shakespeare.Base.DerefString "200px"), 
+                   Text.Internal.Css.CDMixin (centering "200px"))
+              |
+          163 |             $(widgetFile "default-layout")
+              |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+          --  While building package final-project-0.0.0 using:
+                /home/dylan/.stack/setup-exe-cache/x86_64-linux-tinfo6/Cabal-simple_mPHDZzAJ_2.2.0.1_ghc-8.4.4 --builddir=.stack-work/dist/x86_64-linux-tinfo6/Cabal-2.2.0.1 build lib:final-project --ghc-options " -ddump-hi -ddump-to-file"
+              Process exited with code: ExitFailure 1
+      - I changed the type annotation to Text -> Mixin and it worked perfectly.
+      - I learned while creating the HTML template that older versions of Yesod won't recognize new static files unless I stack clean && stack exec -- yesod devel, and that the LTS release I received from Stack is old enough that it has this issue.
+      - I learned while trying to get Mixins working that I also have to clean and rebuild if I change a Lucius mixin.

@@ -7,6 +7,8 @@
 {-# LANGUAGE ExplicitForAll #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE QuasiQuotes #-} -- For Lucius mixins
+{-# LANGUAGE ScopedTypeVariables #-} -- For Lucius mixins
 
 module Foundation where
 
@@ -25,6 +27,9 @@ import Yesod.Core.Types     (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Text.Encoding as TE
+
+-- To support Lucius mixins
+import Text.Lucius
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -137,6 +142,15 @@ instance Yesod App where
 
         let navbarLeftFilteredMenuItems = [x | x <- navbarLeftMenuItems, menuItemAccessCallback x]
         let navbarRightFilteredMenuItems = [x | x <- navbarRightMenuItems, menuItemAccessCallback x]
+
+        -- Define Lucius mixins
+        let centering :: Text -> Mixin
+            centering width =
+              [luciusMixin|
+                width: #{width};
+                margin-left: auto;
+                margin-right: auto;
+              |]
 
         -- We break up the default layout into two components:
         -- default-layout is the contents of the body tag, and

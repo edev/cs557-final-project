@@ -1,73 +1,662 @@
-.masthead,
-.navbar {
-    background-color: rgb(27, 28, 29);
+/* Lucius variables */
+@textcolor: #333;
+
+
+/* Bounty typeface: Lora! */
+@import url(http://fonts.googleapis.com/css?family=Lora:400,700,700italic,400italic);
+
+body {
+  background-color: #222;
+  background-image: url(@{StaticR img_body_background_jpg});
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center top;
+  
+  margin: 0 10px;
+  font-family: Lora, Georgia, serif;
+  color: #{textcolor};
 }
 
-.navbar-default .navbar-nav > .active > a {
-    background-color: transparent;
-    border-bottom: 2px solid white;
+h1, h2, h3, h4, h5, h6 {
+  font-style: italic;
+  color: white;
 }
 
-.navbar-nav {
-    padding-bottom: 1em;
+p a {
+  font-style: italic;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #006cba;
 }
+
+#page-container > * {
+  margin-bottom: 20px;
+}
+
+/* HEADER */
 
 .masthead {
-    margin-top: -21px;
-    color: white;
-    text-align: center;
-    min-height: 500px;
-}
-
-.masthead .header {
-    max-width: 700px;
-    margin: 0 auto;
-    font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
-}
-
-.masthead h1.header {
-    margin-top: 1em;
-    margin-bottom: 0em;
-    font-size: 4.5em;
-    line-height: 1.2em;
-    font-weight: normal;
- }
-
-.masthead h2 {
-    font-size: 1.7em;
-    font-weight: normal;
-}
-
-.masthead .btn {
-    margin: 1em 0;
-}
-
-
-/* Common styles for all types */
-.bs-callout {
+  background-color: #382916;
   padding: 20px;
-  margin: 20px 0;
-  border: 1px solid #eee;
-  border-left-width: 5px;
-  border-radius: 3px;
+  text-align: center;
+  
+  box-shadow: 0 0 20px black;
+
+  a img {
+  display: block;
+  ^{centering "200px"}
+  }
+  
+  .logo {
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    margin-top: 30px;
+    margin-bottom: 0;
+  }
+
+  p {
+    color: white;
+    margin: 0;
+  }
 }
 
-.bs-callout p:last-child {
+/* ANNOUNCEMENTS & MAIN STORY */
+.announcement>a {
+  text-decoration: none;
+}
+
+.announcement h2/*, .main-story h1 */ {
+  background-color: rgba(0, 108, 186, 0.5);
+  line-height: 48px;
+  font-size: 38px;
+  text-align: center;
+  margin: 0;
+  padding: 11px 0;
+}
+
+.announcement h2, .announcement .content-area {
+  transition: background-color 1s ease;
+  -webkit-transition: background-color 1s ease;
+}
+
+.announcement .content-area {
+  background-color: #d8d3cb;
+  padding: 20px 20px 0;
+}
+
+.main-story .content-area {
+  background-color: #e5e2dc;
+  padding: 20px;
+}
+
+.main-story .content-area :first-child {
+  margin-top: 0;
+}
+
+.main-story .content-area h1,
+.main-story .content-area h2,
+.main-story .content-area h3,
+.main-story .content-area h4,
+.main-story .content-area h5,
+.main-story .content-area h6 {
+  color: #006CBA; /* Dark brown was: #382916 */
   margin-bottom: 0;
 }
 
-.bs-callout-info {
-  border-left-color: #1b809e;
+.main-story .content-area h1 {
+  font-size: 38px;
 }
 
-/* Space things out */
-.bs-docs-section {
-  margin-bottom: 60px;
+.main-story .content-area h2 {
+  font-size: 28px;
+  font-weight: normal;
 }
-.bs-docs-section:last-child {
+
+.main-story .content-area h3 {
+  font-size: 24px;
+  font-weight: normal;
+}
+
+.announcement p, .main-story p {
+  margin: 0;
+  padding-bottom: 20px;
+  color: #{textcolor};
+}
+
+#page-container .main-story .content-area>:last-child {
+  padding-bottom: 0;
   margin-bottom: 0;
 }
 
-#message {
+.main-story .content-area:after {
+  clear: both;
+  display: table;
+  content: "";
+}
+
+/* MAIN NAVIGATION */
+nav.mobile {
+  box-shadow: 0 0 20px black;
+}
+
+nav.mobile.js {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  -webkit-transition: top 0.4s;
+  transition: top 0.4s;
+  z-index: 2;
+}
+
+nav.primary, nav.mobile {
+  background-color: #382916;
+}
+
+nav.primary, nav.primary li.current {
+  background-image: image-url('shadow-right.png');
+  background-position: right top;
+  background-repeat: repeat-y;
+}
+
+nav.primary ul, nav.mobile  ul{
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+nav.primary a, nav.mobile a {
+  text-decoration: none;
+  color: #cbc6bb;
+  font-weight: normal;
+  font-style: italic;
+  font-size: 21px;
+  line-height: 42px;
+}
+
+nav .submenu {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+nav .submenu:last-child {
+  margin-bottom: 0;
+}
+
+nav .submenu > a {
+  font-weight: bold;
+  font-style: normal;
+}
+
+nav.primary .submenu ul a,
+nav.mobile .submenu ul a {
+  font-size: 20px;
+  line-height: 42px;
+  padding-left: 40px;
+  font-style: normal;
+}
+
+nav.mobile a {
+  padding-left: 10%;
+  width: 90%;
+  display: block;
+}
+
+nav.mobile .submenu ul a {
+  padding-left: 20%;
+}
+  
+
+nav.mobile h2 {
+  font-style: normal;
+}
+
+nav li.current>a {
+  color: #E5E2DC;
+  font-style: normal;
+  font-weight: bold;
+  display: block;
+  background-color: #006CBA;
+
+  background-image: image-url('shadow-right.png');
+  background-position: right top;
+  background-repeat: repeat-y;
+}
+	
+/* CHRISTMAS */
+/* NOTE: If we need to have full-on sign-up pages for other seasons,
+   the CSS that's general should be pretty easy to separate. 
+   More or less, everything but the colors!
+*/
+.christmas .announcement h2/*, .christmas .main-story h1*/ {
+  background-color: rgba(181, 18, 18, 0.3);
+}
+
+.christmas .announcement:first-of-type h2, .christmas .announcement:hover h2 {
+  background-color: rgba(255, 0, 0, 0.3);
+}
+
+.christmas .announcement:first-of-type .content-area, .christmas .announcement:hover .content-area {
+  background-color: #ffffff;
+}
+
+.christmas .announcement .content-area {
+  background-color: #e5e2dc;
+}
+
+.christmas a {
+  color: #a31010;
+}
+
+.christmas .main-story .content-area {
+  background-color: #e5e2dc;
+}
+
+.christmas .main-story .content-area h1,
+.christmas .main-story .content-area h2,
+.christmas .main-story .content-area h3,
+.christmas .main-story .content-area h4,
+.christmas .main-story .content-area h5,
+.christmas .main-story .content-area h6 {
+  color: #c91414;
+}
+
+.main-story section.need:first-of-type {
+  margin-top: 40px;
+}
+
+.christmas .main-story section.need {
+  border-top-color: #C91414;
+}
+  
+.main-story section.need {
+  border-top: 1px solid #006CBA;
+  background-color: white;
+  padding: 20px 20px 0;
+}
+
+.main-story section.need a {
+  text-decoration: none;
+}
+
+.christmas .main-story section.need h2 {
+  color: #C91414;
+}
+
+.main-story section.need h2 {
+  color: #006CBA;
+  margin: 0;
+}
+
+.main-story section.need aside p {
+  font-size: 42px;
+  font-style: italic;
+}
+
+.christmas .main-story section.need .sign-up {
+  background-color: #C91414;
+}
+
+.main-story section.need .sign-up {
+  color: #ffffff;
+  background-color: #006CBA;
+  font-style: italic;
+  font-weight: bold;
+  line-height: 36px;
+  font-size: 21px;
+  display: block;
+}
+
+nav h3 {
+  font-style: normal;
+  font-weight: bold;
+  color: #cbc6bb;
+  margin-bottom: 8px;
+}
+
+nav.mobile h3 {
+  margin-top: 24px;
+}
+
+.christmas nav .current > a {
+  color: white;
+  background-color: #a61010;
+}
+
+/* FOOTER */
+#page-container > footer {
+  text-align: right;
+  color: #e5e2dc;
+}
+
+#page-container > footer a {
+  color: #b4ac9c;
+}
+
+/* MEDIA-SPECIFIC DIFFERENCES */
+
+/* Smartphones (narrowest format) only */
+@media (max-width: 519px) {
+  body {
+    margin: 0;
+    background-color: #282822;
+  }
+  
+  #page-container > * {
     margin-bottom: 40px;
+  }
+  
+  .masthead {
+    padding-bottom: 40px;
+  }
+  
+  .masthead h2 {
+    font-size: 28px;
+  }
+  
+  .announcement p, .main-story p {
+    font-size: 18px;
+    line-height: 1.4;
+  }
+  
+  /* Christmas */
+  .main-story section.need {
+    padding: 10px 10px 0;
+    margin: 0 -10px 20px;
+  }
+  
+  .main-story section.need:after {
+    display: table;
+    clear: both;
+    content: "";
+  }
+  
+  .main-story section.need aside p {
+    line-height: 42px;
+    padding-bottom: 20px;
+  }
+  
+  .main-story section.need aside div:first-child {
+    float: left;
+    width: 50%;
+  }
+  
+  .main-story section.need aside div:last-child {
+    float: right;
+    width: 50%;
+    text-align: right;
+  }
+  
+  .main-story section.need h2 {
+    margin-bottom: 4px;
+  }
+  
+  .main-story section.need .sign-up {
+    clear: both;
+    width: 100%;
+    margin: 0 -10px;
+    text-align: center;
+    padding: 10px 10px;
+  }
+}
+
+/* On versions likely to be seen on a tablet or smartphone, hide the sidebar navigation and use top navigation instead */
+@media (max-width: 759px) {
+  nav.primary {
+    display: none;
+  }
+
+  nav.mobile h2{
+    text-align: center;
+  }
+
+  /* Use this with JS to mide/show menu */
+  #page-container.js {
+    margin-top: 112px;
+  }
+}
+
+/* 520px and up */
+@media (min-width: 520px) {
+  body {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  #page-container > * {
+    margin-bottom: 40px;
+  }
+
+  .masthead .find-us {
+    text-align: right;
+
+    ^{centering "460px"}
+  }
+
+  .masthead .find-us h2 {
+    font-size: 21px;
+    margin-top: 20px;
+    line-height: 18px;
+    margin-bottom: 2px;
+  }
+  
+  .masthead .find-us a+h2 {
+    margin-top: 0;
+  }
+  
+  .masthead .find-us p {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  
+  .masthead .find-us a {
+    float: right;
+    margin-left: 20px;
+    margin-top: 5px; /* Line up with text. */
+  }
+  
+  .masthead .find-us:after {
+    display: table;
+    content: "";
+    clear: both;
+  }
+  
+ .announcement h2/*, .main-story h1*/ {
+    text-align: left;
+    padding-left: 20px;
+    padding-right: 10px; /* Leave a little wiggle room to prevent unnecessary wrapping */
+  }
+  
+  /* Christmas */
+  .main-story section.need {
+    margin-bottom: 80px;
+  }
+  
+  .main-story section.need .copy {
+    float: left;
+    width: 60%;
+  }
+  
+  .main-story section.need aside {
+    float: left;
+    width: 40%;
+    text-align: right;
+  }
+  
+  .main-story section.need .sign-up {
+    clear: both;
+    width: 100%;
+    margin: 0 -20px;
+    text-align: center;
+    padding: 10px 20px;
+  }
+}
+
+/* 760px and up */
+@media (min-width: 760px) {
+  body {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  
+  #page-container > * {
+    margin-bottom: 60px;
+  }
+  
+  nav.mobile {
+    display: none;
+  }
+  
+  #page-container > .masthead { /* Using "body >" to take precedence over the "body > :not(nav)" selectors */
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  .masthead .logo {
+    float: left;
+    margin-bottom: 0;
+  }
+  
+  .masthead .find-us {
+    float: right;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  .masthead:after {
+    display: table;
+    clear: both;
+    content: "";
+  }
+
+  nav.primary {
+    clear: both;
+    width: 220px; /* Total: 260px */
+    position: absolute; /* Take the element out of flow, but don't reposition it */
+    padding: 40px 0 40px 40px;
+    margin-top: 40px;
+  }
+  
+  article.main-story {
+    clear: both;
+  }
+  
+  article.main-story .content-area {
+    margin-left: 260px;
+    min-height: 600px;
+  }
+
+  
+  nav.primary a {
+    padding-left: 20px;
+  }
+  
+}
+
+/* Specifically for tablet layout */
+@media (min-width: 760px) and (max-width: 979px) {
+  #page-container > .masthead {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+  
+  /* Target second and third asides only */
+  #page-container > aside.three + aside.three {
+    width: 50%;
+    float: left;
+  }
+  
+  #page-container > aside.three + aside.three .content-area, #page-container > aside.two .content-area {
+    min-height: 200px;
+  }
+  
+  #page-container > aside.three:nth-last-of-type(2) .content-area, #page-container > aside.two:first-of-type .content-area {
+    padding-right: 10px;
+  }
+  
+  #page-container > aside.three:last-of-type .content-area, #page-container > aside.two:last-of-type .content-area {
+    padding-left: 10px;
+  }
+  
+  #page-container > aside.two {
+    width: 50%;
+    float: left;
+  }
+
+  article.main-story .content-area {
+    padding: 40px;
+  }
+}
+
+/* Desktop only */
+@media (min-width: 980px) {
+  body {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  #page-container {
+    width: 960px;
+    margin: 0 auto;
+  }
+  
+  .masthead {
+    width: 840px;
+    padding: 60px;
+  }
+  
+  #page-container > aside.two, #page-container > aside.three {
+    width: 320px;
+    float: left;
+  }
+  
+  #page-container > aside.two:first-of-type {
+    margin-left: 260px;
+  }
+  
+  #page-container > aside.two .content-area, #page-container > aside.three .content-area {
+    min-height: 220px;
+    padding: 20px 10px 0;
+  }
+  
+  #page-container > aside.two:first-of-type .content-area, #page-container > aside.three:first-of-type .content-area {
+    padding-left: 20px;
+  }
+  
+  #page-container > aside.two:last-of-type .content-area, #page-container > aside.three:last-of-type .content-area {
+    padding-right: 20px;
+  }
+  
+  .main-story {
+    width: 960px;
+  }
+  
+/*  .main-story h1 {
+    margin-left: 260px;
+  }
+*/  
+  .main-story .content-area {
+    padding: 40px;
+  }
+  
+  .announcement:first-of-type h2, .announcement:hover h2 {
+    background-color: rgba(0, 148, 255, 0.5);
+    /* Transition specified elsewhere. Known issue with most browsers:
+       transition doesn't work on most pseudo-selectors.
+    */
+  }
+  
+  .announcement:first-of-type .content-area, .announcement:hover .content-area {
+    background-color: #e5e2dc;
+    /* Transition specified elsewhere. Known issue with most browsers:
+       transition doesn't work on most pseudo-selectors.
+    */
+  }
+  
+  .announcement h2 {
+    font-size: 25px;
+  }
+  
 }
