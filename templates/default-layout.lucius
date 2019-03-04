@@ -1,6 +1,9 @@
 /* Lucius variables */
 @textcolor: #333;
-
+@pageBGDark: #382916; /* Brown */
+@pageTextLight: white;
+@spacing: 20px;
+@halfSpacing: 30px;
 
 /* Bounty typeface: Lora! */
 @import url(http://fonts.googleapis.com/css?family=Lora:400,700,700italic,400italic);
@@ -12,14 +15,14 @@ body {
   background-size: cover;
   background-position: center top;
   
-  margin: 0 10px;
+  margin: 0 #{halfSpacing};
   font-family: Lora, Georgia, serif;
   color: #{textcolor};
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-style: italic;
-  color: white;
+  color: #{pageTextLight};
 }
 
 p a {
@@ -30,14 +33,14 @@ p a {
 }
 
 #page-container > * {
-  margin-bottom: 20px;
+  margin-bottom: #{spacing};
 }
 
 /* HEADER */
 
 .masthead {
-  background-color: #382916;
-  padding: 20px;
+  background-color: #{pageBGDark};
+  padding: #{spacing};
   text-align: center;
   
   box-shadow: 0 0 20px black;
@@ -48,7 +51,7 @@ p a {
   }
   
   .logo {
-    margin-bottom: 20px;
+    margin-bottom: #{spacing};
   }
 
   h2 {
@@ -57,7 +60,7 @@ p a {
   }
 
   p {
-    color: white;
+    color: #{pageTextLight};
     margin: 0;
   }
 }
@@ -83,12 +86,12 @@ p a {
 
 .announcement .content-area {
   background-color: #d8d3cb;
-  padding: 20px 20px 0;
+  padding: #{spacing} #{spacing} 0;
 }
 
 .main-story .content-area {
   background-color: #e5e2dc;
-  padding: 20px;
+  padding: #{spacing};
 }
 
 .main-story .content-area :first-child {
@@ -101,7 +104,7 @@ p a {
 .main-story .content-area h4,
 .main-story .content-area h5,
 .main-story .content-area h6 {
-  color: #006CBA; /* Dark brown was: #382916 */
+  color: #006CBA;
   margin-bottom: 0;
 }
 
@@ -121,7 +124,7 @@ p a {
 
 .announcement p, .main-story p {
   margin: 0;
-  padding-bottom: 20px;
+  padding-bottom: #{spacing};
   color: #{textcolor};
 }
 
@@ -152,7 +155,7 @@ nav.mobile.js {
 }
 
 nav.primary, nav.mobile {
-  background-color: #382916;
+  background-color: #{pageBGDark};
 }
 
 nav.primary, nav.primary li.current {
@@ -177,8 +180,8 @@ nav.primary a, nav.mobile a {
 }
 
 nav .submenu {
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: #{spacing};
+  margin-bottom: #{spacing};
 }
 
 nav .submenu:last-child {
@@ -273,8 +276,8 @@ nav li.current>a {
   
 .main-story section.need {
   border-top: 1px solid #006CBA;
-  background-color: white;
-  padding: 20px 20px 0;
+  background-color: #{pageTextLight};
+  padding: #{spacing} #{spacing} 0;
 }
 
 .main-story section.need a {
@@ -321,7 +324,7 @@ nav.mobile h3 {
 }
 
 .christmas nav .current > a {
-  color: white;
+  color: #{pageTextLight};
   background-color: #a61010;
 }
 
@@ -363,8 +366,8 @@ nav.mobile h3 {
   
   /* Christmas */
   .main-story section.need {
-    padding: 10px 10px 0;
-    margin: 0 -10px 20px;
+    padding: #{halfSpacing} #{halfSpacing} 0;
+    margin: 0 -#{halfSpacing} #{spacing};
   }
   
   .main-story section.need:after {
@@ -375,7 +378,7 @@ nav.mobile h3 {
   
   .main-story section.need aside p {
     line-height: 42px;
-    padding-bottom: 20px;
+    padding-bottom: #{spacing};
   }
   
   .main-story section.need aside div:first-child {
@@ -396,9 +399,9 @@ nav.mobile h3 {
   .main-story section.need .sign-up {
     clear: both;
     width: 100%;
-    margin: 0 -10px;
+    margin: 0 -#{halfSpacing};
     text-align: center;
-    padding: 10px 10px;
+    padding: #{halfSpacing} #{halfSpacing};
   }
 }
 
@@ -421,8 +424,8 @@ nav.mobile h3 {
 /* 520px and up */
 @media (min-width: 520px) {
   body {
-    margin-left: 20px;
-    margin-right: 20px;
+    margin-left: #{spacing};
+    margin-right: #{spacing};
   }
 
   #page-container > * {
@@ -437,7 +440,7 @@ nav.mobile h3 {
 
   .masthead .find-us h2 {
     font-size: 21px;
-    margin-top: 20px;
+    margin-top: #{spacing};
     line-height: 18px;
     margin-bottom: 2px;
   }
@@ -453,7 +456,7 @@ nav.mobile h3 {
   
   .masthead .find-us a {
     float: right;
-    margin-left: 20px;
+    margin-left: #{spacing};
     margin-top: 5px; /* Line up with text. */
   }
   
@@ -465,8 +468,8 @@ nav.mobile h3 {
   
  .announcement h2/*, .main-story h1*/ {
     text-align: left;
-    padding-left: 20px;
-    padding-right: 10px; /* Leave a little wiggle room to prevent unnecessary wrapping */
+    padding-left: #{spacing};
+    padding-right: #{halfSpacing}; /* Leave a little wiggle room to prevent unnecessary wrapping */
   }
   
   /* Christmas */
@@ -488,17 +491,17 @@ nav.mobile h3 {
   .main-story section.need .sign-up {
     clear: both;
     width: 100%;
-    margin: 0 -20px;
+    margin: 0 -#{spacing};
     text-align: center;
-    padding: 10px 20px;
+    padding: #{halfSpacing} #{spacing};
   }
 }
 
 /* 760px and up */
 @media (min-width: 760px) {
   body {
-    margin-left: 20px;
-    margin-right: 20px;
+    margin-left: #{spacing};
+    margin-right: #{spacing};
   }
   
   #page-container > * {
@@ -550,7 +553,7 @@ nav.mobile h3 {
 
   
   nav.primary a {
-    padding-left: 20px;
+    padding-left: #{spacing};
   }
   
 }
@@ -558,8 +561,8 @@ nav.mobile h3 {
 /* Specifically for tablet layout */
 @media (min-width: 760px) and (max-width: 979px) {
   #page-container > .masthead {
-    margin-left: -20px;
-    margin-right: -20px;
+    margin-left: -#{spacing};
+    margin-right: -#{spacing};
   }
   
   /* Target second and third asides only */
@@ -573,11 +576,11 @@ nav.mobile h3 {
   }
   
   #page-container > aside.three:nth-last-of-type(2) .content-area, #page-container > aside.two:first-of-type .content-area {
-    padding-right: 10px;
+    padding-right: #{halfSpacing};
   }
   
   #page-container > aside.three:last-of-type .content-area, #page-container > aside.two:last-of-type .content-area {
-    padding-left: 10px;
+    padding-left: #{halfSpacing};
   }
   
   #page-container > aside.two {
@@ -618,15 +621,15 @@ nav.mobile h3 {
   
   #page-container > aside.two .content-area, #page-container > aside.three .content-area {
     min-height: 220px;
-    padding: 20px 10px 0;
+    padding: #{spacing} #{halfSpacing} 0;
   }
   
   #page-container > aside.two:first-of-type .content-area, #page-container > aside.three:first-of-type .content-area {
-    padding-left: 20px;
+    padding-left: #{spacing};
   }
   
   #page-container > aside.two:last-of-type .content-area, #page-container > aside.three:last-of-type .content-area {
-    padding-right: 20px;
+    padding-right: #{spacing};
   }
   
   .main-story {

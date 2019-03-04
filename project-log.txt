@@ -50,3 +50,10 @@ Next up: read chapter "Shakespearean Templates" and create a Shakespearean-templ
       - I changed the type annotation to Text -> Mixin and it worked perfectly.
       - I learned while creating the HTML template that older versions of Yesod won't recognize new static files unless I stack clean && stack exec -- yesod devel, and that the LTS release I received from Stack is old enough that it has this issue.
       - I learned while trying to get Mixins working that I also have to clean and rebuild if I change a Lucius mixin.
+    Limitation of variables:
+      - I tried converting my 20/10-pixel spacing to @spacing and @halfSpacing, with @halfSpacing defined as @halfSpacing = calc(#{spacing}/2);, but it doesn't process #{spacing} or even produce a compile error! It actually produces incorrect CSS!
+      - I found that if I leave a semicolon off a variable, it will also produce invalid CSS! What gives?!
+    Next steps:
+      1. Get good dummy content in
+      2. Get the CSS working well and looking right!
+      3. Continue refactoring the CSS
