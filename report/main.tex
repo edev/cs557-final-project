@@ -1,4 +1,6 @@
 \documentclass{article}
+%
+% BASIC PACKAGES
 \usepackage{amsmath,amssymb,amsthm,enumitem} % Some standard math packages.
 \usepackage{titling} % Enables \setlength{\droptitle}
 \usepackage{parskip} % Cleaner paragraph display
@@ -7,51 +9,46 @@
 \usepackage{fancyvrb} % Allows Verbatim sections with line numbers and such. Note the capital V.
 \usepackage{xcolor} % for text color, e.g. \todo command
 \usepackage{ragged2e} % For text alignment environments, e.g. \begin{center}
-\usepackage[]{forest} % Draws trees.
 \usepackage{enumitem} % Allows different list enumerations, like a.) b.) c.)
+
+% HYPERLINKS
 \usepackage{hyperref} % For \href and \uri
+\hypersetup{
+  colorlinks=true,
+  urlcolor=green,
+  linkcolor=blue
+}
+
+% BIBLIOGRAPHY
 \usepackage[english]{babel}
 \usepackage[
   backend=biber,
   style=numeric,
   sorting=ynt
-]{biblatex} % Bibliography
+]{biblatex}
 \addbibresource{bibliography.bib}
-% Set center alignment within tree nodes, which allows multi-line nodes.
-\forestset{qtree/.style={for tree={parent anchor=south, 
-           child anchor=north,align=center,inner sep=0pt}}}
 
+% CUSTOM COMMANDS
 \newcommand {\todo}[1] {{\textbf{\color{red}#1}}}
-\newcommand {\mq}[1] {\text{`$#1$'}}
-\newcommand {\unit}[1] {\ensuremath{\ \text{#1}}}
 \newcommand {\code}[1] {\texttt{#1}}
 \newcommand {\term}[1] {\textbf{#1}}
-
-\newenvironment{typewriter}{\ttfamily}{\par}
 
 \begin{document}
 
 % Header
 \begin{center}
-    \Huge Reimplementing a Ruby on Rails Site in Yesod \\
+    \Huge Re-implementing a Ruby on Rails Site in Yesod \\
     \large CS 557: Functional Languages @ Portland State University \\
     Dylan Laufenberg, winter 2019
 \end{center}
 
 \input{introduction.tex}
 
+\todo{New section: Cover ``The Basics''?}
+
 \input{resources-and-type-safe-urls.tex}
-\section{The basics}
 
-I'm not sure what should go here, exactly, but the chapter on the basics definitely deserves some discussion AS IT PERTAINS TO MY CODE. I don't think there's much value in covering things I didn't write.
-
-\section{Shakespearean Templates}
-
-Topics:
-\begin{itemize}
-  \item Hamlet: went pretty smoothly, Initially had to cut out lots of features as NYI.
-  \item Lucius/Cassius: oh, man. Whole subsection(s), whole big thing.
-\end{itemize}
+\input{shakespearean-templates.tex}
 
 \section{Reflections after the basics}
 

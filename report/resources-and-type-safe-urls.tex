@@ -1,12 +1,12 @@
 \section{Resources and type-safe URIs}
 
-To represent \term{routes}, which are mappings from URIs to server-side code, Yesod uses what it calls resources. A \term{resource} is a \code{data} constructor that acts as the canonical name of the route in views. For instance, the default site scaffold includes a static route of the form:
+To represent \term{routes}, which are mappings from URIs to server-side code, Yesod uses what it calls resources. A \term{resource} is a \code{data} constructor that acts as the canonical name of the route in views \cite{ybk}. For instance, the default site scaffold includes a static route of the form:
 
 \begin{Verbatim}
 /static StaticR Static appStatic
 \end{Verbatim}
 
-This line specifies a \code{/static} route, a resource constructor named \code{StaticR} as the name of the route, and a subsite named \code{Static} whose function \code{appStatic} will handle requests on this route. In order to create a link to a static file, e.g. an image served as part of a template, we invoke the \code{StaticR} constructor with an appropriate argument. The \code{Static} subsite generates ``static file identifiers`` at compile time \cite{ybk}. When we insert a link using a resource constructor:
+This line specifies a \code{/static} route, a resource constructor named \code{StaticR} as the name of the route, and a subsite named \code{Static} whose function \code{appStatic} will handle requests on this route \cite{ybkRouting}. In order to create a link to a static file, e.g. an image served as part of a template, we invoke the \code{StaticR} constructor with an appropriate argument. The \code{Static} subsite generates ``static file identifiers`` at compile time \cite{ybkScaffolding}. When we insert a link using a resource constructor:
 
 \begin{Verbatim}
 <img ... src="@{StaticR img_logo_png}" ... />
@@ -17,6 +17,8 @@ Yesod generates a correct link to the static resource at compile-time. In this c
 \begin{Verbatim}
 <img ... src="http://localhost:3000/static/img/logo.png?etag=GVVUzjtL" ... />
 \end{Verbatim}
+
+\subsection{Benefits of Resources}
 
 There are two primary benefits to this approach, both of which leverage Haskell features from class (albeit at a very advanced level).
 
@@ -36,9 +38,9 @@ GHC will detect the issue for us and (rather obtusely) notify us of the issue wi
     |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 \end{Verbatim}
 
-In effect, Yesod automatically tests every internal link at compile time, without the need to manually write tests against the generated HTML. (Having written Bounty's Rails front-end largely via test-driven development, I can attest that Yesod saves me an inordinate amount of time!)
+In effect, Yesod automatically tests every internal link at compile time, without the need to manually write tests against the generated HTML. We, the developers, need to test our functions for generating links, then Yesod takes care of the rest for us. In this case, I feel comfortable as a developer taking it on faith that the static file subsite is well-tested.
 
-\paragraph{Refactor routes with confidence} Generating links at compile time also eliminates an entire class of common and nefarious errors: broken links. Updating or moving routes is a common occurrence in Web application development, even with careful planning. Yesod makes this safe and automatic by generating all such links from resource constructors at compile time. to change the route across the entire application, all we need to do is change the route definition:
+\paragraph{Refactor routes with confidence} Generating links at compile time also eliminates an entire class of common and nefarious errors: broken links. Updating or moving routes is a common occurrence in Web application development, even with careful planning. Yesod makes this safe and automatic by generating all such links from resource constructors at compile time. To change the route across the entire application, all we need to do is change the route definition:
 
 \begin{Verbatim}
 /dynamic StaticR Static appStatic
