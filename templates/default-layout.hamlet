@@ -7,7 +7,7 @@
 
 <div #pageContainer>
   <header .masthead>
-    \<image class="logo" src="@{StaticR img_logo_png}" alt="Sharing God's Bounty logo, a cornucopia originally designed in the 1980s" height=200 />
+    \<img class="logo" src="@{StaticR img_logo_png}" alt="Sharing God's Bounty logo, a cornucopia originally designed in the 1980s" height=200 />
     <section .find-us>
       <a href="http://maps.google.com/maps?q=2320+El+Camino+Avenue,+Sacramento,+CA&amp;hl=en&amp;vpsrc=0&amp;hnear=2320+El+Camino+Ave,+Sacramento,+California+95825&amp;t=h&amp;z=17">
         <img src="@{StaticR img_staticmap_png}" alt="Map to Saint Philomene's Church" />
