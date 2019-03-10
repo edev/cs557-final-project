@@ -1,21 +1,57 @@
 \section{Shakespearean Templates}
 
-Yesod provides domain-specific languages (DSLs) over HTML, CSS, and Javascript. In converting my site, I migrated the HTML, CSS, and Javascript, in that order. (For the full, reference versions of all information in this section that's not otherwise cited, see \cite{ybkShakes}.)
+Yesod provides domain-specific languages (DSLs) over HTML, CSS, and Javascript, all named after Shakespearean characters. In converting my site, I migrated the HTML, CSS, and Javascript, in that order. (For the full, reference versions of all information in this section that's not otherwise cited, see \cite{ybkShakes}.)
 
-\todo{Cover interpolation: variables, type-safe URLs, and templates}
+All of Yesod's DSLs provide a common set of interpolation features:
+
+\begin{itemize}
+  \item \term{Variable interpolation} All variables in scope when a template is rendered are available through variable interpolation. For instance, in my main site template, I write
+
+    \code{<title>\#\{pageTitle pc\} - Sharing God's Bounty}
+
+    to insert the value of \code{pageTitle pc} as part of the HTML title.
+
+  \item \term{Resource interpolation} We can insert type-safe URIs via \code{@\{routeR\}} resource interpolation, as discussed in \nameref{resourcesAndTSURIs}.
+
+  \item \term{Template interpolation} We can embed templates in other templates by writing \code{\^{}\{templateName\}}. This is safe in that it only allows embedding of templates of the same type and, of course, provides all the usual compile-time guarantees for both templates. \todo{Add reference to Mixins section?}
+\end{itemize}
 
 \subsection{Hamlet}
 
-Yesod uses \term{Hamlet} as its HTML processing DSL. Hamlet is similar to HTML, with a few distinguishing features:
+Yesod uses Hamlet as its HTML DSL. Hamlet is similar to HTML, with a few distinguishing features.
 
-\begin{itemize}
-  \item \term{Significant whitespace} Hamlet templates infer closing tags from indentation levels. When you write, for instance, \code{<div>}, everything that should appear inside this tag must be nested below it. A matching closing tag is automatically inserted at the correct place in the generated HTML.
-  \item \term{Class and ID shorthand} Hamlet templates provide shorthand for specifying classes and IDs by prefacing a class or ID name with a \code{.} or a \code{\#}, respectively.
-  \item \todo{Anything else here?}
-\end{itemize}
+\paragraph{Significant whitespace} Hamlet templates infer closing tags from indentation levels. When you write, for instance, \code{<div>}, everything that should appear inside this tag must be nested below it. A matching closing tag is automatically inserted at the correct place in the generated HTML. 
 
-\todo{Move to reflections?} Unfortunately, through my own testing (and mistakes), I've found that Hamlet's value for checking the correctness of generated HTML is highly limited.
+\paragraph{Class and ID shorthand} Hamlet templates provide shorthand for specifying classes and IDs by prefacing a class or ID name with a \code{.} or a \code{\#}, respectively. This shorthand even works with multiple classes, by writing either \code{<div .foo .bar>} or \code{<div ."foo bar">}. Either form generates the final HTML \code{<div class="foo bar"></div>}. To be honest, I tried these forms with the intention of exposing a shortcoming of Hamlet, and I was shocked to see that it handled both cases beautifully!
 
+\paragraph{Example} To see these features in action, let's take a look at my mobile navigation menu. The Hamlet representation is as follows: \todo{UPDATE THIS EXAMPLE with the ``final'' version! It'll be WAY more impressive!}
+
+\begin{Verbatim}
+<nav .mobile>
+  <ul>
+    <li>Menu items go here. 
+  <h2>
+    Menu
+\end{Verbatim}
+
+Which compiles to:
+
+\begin{Verbatim}
+<nav class="mobile"><ul><li>Menu items go here. </li>
+</ul>
+<h2>Menu</h2>
+</nav>
+\end{Verbatim}
+
+\paragraph{Shortcomings} There are, unfortunately, a number of shortcomings to Hamlet. First and perhaps most importantly, none of the four templating DSLs provide the strong, compile-time guarantees of correctness that we expect in Haskell, even though Hamlet in particular feels like it could. As a new user, I was genuinely surprised to learn that Hamlet doesn't raise compile-time errors for invalid tags! For instance, when I mistakenly wrote \code{<image ...>}, Hamlet happily generated both opening and closing \code{image} tags, which, understandably, confused both Firefox and me.
+
+Second, although Hamlet knows that some tags like \code{img} are self-closing, it doesn't insert the closing \code{/} at the ends of such tags.
+
+Third, Hamlet \emph{does not} check whether classes and IDs written in Hamlet notation exist in linked Cassius or Lucius files!
+
+Fourth, the HTML produced seems to be both arbitrary and virtually unreadable in its structure. The navigation example above is Hamlet's output, verbatim, and this is with minimization disabled! What particularly irks me about this oversight is that Hamlet \emph{outright requires} proper indentation and spacing! Why it doesn't simply carry this indentation through to the final HTML is beyond my comprehension.
+
+\subsection{Lucius}
 Topics:
 \begin{itemize}
   \item Hamlet: went pretty smoothly, Initially had to cut out lots of features as NYI.
