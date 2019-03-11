@@ -52,6 +52,45 @@ Third, Hamlet \emph{does not} check whether classes and IDs written in Hamlet no
 Fourth, the HTML produced seems to be both arbitrary and virtually unreadable in its structure. The navigation example above is Hamlet's output, verbatim, and this is with minimization disabled! What particularly irks me about this oversight is that Hamlet \emph{outright requires} proper indentation and spacing! Why it doesn't simply carry this indentation through to the final HTML is beyond my comprehension.
 
 \subsection{Lucius}
+To represent CSS, Yesod uses two, equivalent DSLs: Lucius, which is ``a superset of CSS'' \cite{...}, and Cassius, which uses significant whitespace instead of curly braces. I chose to use Lucius to ease the process the migration from Ruby on Rails.
+
+Lucius and Cassius both present broadly similar feature sets to Sass, which my Ruby on Rails app uses for its CSS. In fact, in searching for help on Lucius mixins, I found a question by a Sass user who was similarly struggling with the Lucius equivalent \cite{...}. (More on that in the \todo{CORRECT Mixins} section.) Put simply, Lucius and Cassius aim to ease the process of writing CSS, \emph{not} to provide strong compile-time guarantees of the correctness of CSS.
+
+\subsection{Basic features}
+
+Lucius supports fairly standard features to simplify generating CSS. In addition to interpolation, it supports another, immensely useful feature: nesting selectors to reduce repetition. Other than the surprising (and unfriendly) syntactic detail that we write \code{@foo} to define a variable and \code{\#\{foo\}} to use it, Lucius feels familiar after working with Hamlet. With this understanding, I began migrating my Sass by writing some Lucius variables at the top of my \code{.lucius} file:
+
+\begin{Verbatim}
+@textcolor: #333;
+@pageBGDark: #382916; /* Brown */
+@pageTextLight: white;
+@spacing: 20px;
+@halfSpacing: 10px;
+\end{Verbatim}
+
+Here, \code{@spacing} and \code{@halfspacing} supported the grid on which I originally designed the layout and opened up a new possibility that, should I ever wish to adjust this grid, I might well be able to do so simply by changing these variables. However, this potential is limited somewhat by encountered another, unfortunate limitation I found while experimenting with this new idea: Lucius variables cannot invoke other Lucius variables. When we write, for instance: 
+
+\begin{Verbatim}
+@spacing: 20px;
+@halfSpacing: calc(#{spacing}/2);
+
+body {
+  margin: 0 #{halfSpacing};
+}
+\end{Verbatim}
+
+Lucius generates the CSS:
+
+\begin{Verbatim}
+body {
+  margin: 0 calc(#{spacing}/2);
+}
+\end{Verbatim}
+
+If Lucius supported either nested variables or some notion of compile-time calculation with variables, I might be able to scale nearly every element on the page according to the \code{@spacing}. It's disappointing that Yesod ships with this limitation, but it downright disheartens me that Lucius does not even notice that it's parsing very clearly invalid CSS!
+
+Then, I updated my CSS to take advantage of all three forms of interpolation as well as nested selectors.
+
 Topics:
 \begin{itemize}
   \item Hamlet: went pretty smoothly, Initially had to cut out lots of features as NYI.
