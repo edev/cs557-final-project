@@ -3,7 +3,7 @@
 @pageBGDark: #382916; /* Brown */
 @pageTextLight: white;
 @spacing: 20px;
-@halfSpacing: 30px;
+@halfSpacing: 10px;
 
 /* Bounty typeface: Lora! */
 @import url(http://fonts.googleapis.com/css?family=Lora:400,700,700italic,400italic);
