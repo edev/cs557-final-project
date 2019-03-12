@@ -1,11 +1,11 @@
 \section{Shakespearean Templates}
 
-Yesod provides domain-specific languages (DSLs) over HTML, CSS, and Javascript, all named after Shakespearean characters. In converting my site, I migrated the HTML, CSS, and Javascript, in that order. (For the full, reference versions of all information in this section that's not otherwise cited, see \cite{ybkShakes}.)
+Yesod provides domain-specific languages (DSLs) over HTML, CSS, and Javascript, all named after Shakespearean characters. In converting my site, I migrate the HTML, CSS, and Javascript, in that order. (For the full, reference versions of all information in this section that's not otherwise cited, see \cite{ybkShakes}.)
 
 All of Yesod's DSLs provide a common set of interpolation features:
 
 \begin{itemize}
-  \item \term{Variable interpolation} All variables in scope when a template is rendered are available through variable interpolation. For instance, in my main site template, I write
+  \item \term{Variable interpolation} All values in scope when a template is rendered are available through variable interpolation. For instance, in my main site template, I write
 
     \code{<title>\#\{pageTitle pc\} - Sharing God's Bounty}
 
@@ -13,7 +13,7 @@ All of Yesod's DSLs provide a common set of interpolation features:
 
   \item \term{Resource interpolation} We can insert type-safe URIs via \code{@\{routeR\}} resource interpolation, as discussed in \nameref{resourcesAndTSURIs}.
 
-  \item \term{Template interpolation} We can embed templates in other templates by writing \code{\^{}\{templateName\}}. This is safe in that it only allows embedding of templates of the same type and, of course, provides all the usual compile-time guarantees for both templates. \todo{Add reference to Mixins section?}
+  \item \term{Template interpolation} We can embed templates in other templates by writing \code{\^{}\{templateName\}}. This is safe in that it only allows embedding of templates of the same type and, of course, provides all the usual compile-time guarantees for both templates. (See the \nameref{luciusMixins} section for more.)
 \end{itemize}
 
 \subsection{Hamlet}
@@ -43,7 +43,7 @@ Which compiles to:
 </nav>
 \end{Verbatim}
 
-\paragraph{Shortcomings} There are, unfortunately, a number of shortcomings to Hamlet. First and perhaps most importantly, none of the four templating DSLs provide the strong, compile-time guarantees of correctness that we expect in Haskell, even though Hamlet in particular feels like it could. As a new user, I was genuinely surprised to learn that Hamlet doesn't raise compile-time errors for invalid tags! For instance, when I mistakenly wrote \code{<image ...>}, Hamlet happily generated both opening and closing \code{image} tags, which, understandably, confused both Firefox and me.
+\paragraph{Shortcomings} There are, unfortunately, a number of shortcomings to Hamlet. First and perhaps most importantly, none of the four templating DSLs provide the strong, compile-time guarantees of correctness that we expect in Haskell, even though Hamlet in particular feels like it could. As a new user, I was genuinely surprised to learn that Hamlet doesn't raise compile-time errors for invalid tags! For instance, I once mistakenly wrote \code{<image ...>}, and Hamlet happily generated both opening and closing \code{image} tags, which, understandably, confused both Firefox and me.
 
 Second, although Hamlet knows that some tags like \code{img} are self-closing, it doesn't insert the closing \code{/} at the ends of such tags.
 
@@ -52,13 +52,13 @@ Third, Hamlet \emph{does not} check whether classes and IDs written in Hamlet no
 Fourth, the HTML produced seems to be both arbitrary and virtually unreadable in its structure. The navigation example above is Hamlet's output, verbatim, and this is with minimization disabled! What particularly irks me about this oversight is that Hamlet \emph{outright requires} proper indentation and spacing! Why it doesn't simply carry this indentation through to the final HTML is beyond my comprehension.
 
 \subsection{Lucius}
-To represent CSS, Yesod uses two, equivalent DSLs: Lucius, which is ``a superset of CSS'' \cite{...}, and Cassius, which uses significant whitespace instead of curly braces. I chose to use Lucius to ease the process the migration from Ruby on Rails.
+To represent CSS, Yesod uses two, equivalent DSLs: Lucius, which is ``a superset of CSS'' \cite{ybkShakes}, and Cassius, which uses significant whitespace instead of curly braces. I chose to use Lucius to ease the process the migration from Ruby on Rails.
 
-Lucius and Cassius both present broadly similar feature sets to Sass, which my Ruby on Rails app uses for its CSS. In fact, in searching for help on Lucius mixins, I found a question by a Sass user who was similarly struggling with the Lucius equivalent \cite{...}. (More on that in the \todo{CORRECT Mixins} section.) Put simply, Lucius and Cassius aim to ease the process of writing CSS, \emph{not} to provide strong compile-time guarantees of the correctness of CSS.
+Lucius and Cassius both present broadly similar feature sets to Sass, which my Ruby on Rails app uses for its CSS. In fact, in searching for help on Lucius mixins, I found a question by a Sass user who was similarly struggling with the Lucius equivalent \cite{soSass}. (More on that in the \nameref{luciusMixins} section.) Put simply, Lucius and Cassius aim to ease the process of writing CSS but \emph{do not} provide strong compile-time guarantees of the correctness of CSS.
 
-\subsection{Basic features}
+\subsubsection{CSS variables}
 
-Lucius supports fairly standard features to simplify generating CSS. In addition to interpolation, it supports another, immensely useful feature: nesting selectors to reduce repetition. Other than the surprising (and unfriendly) syntactic detail that we write \code{@foo} to define a variable and \code{\#\{foo\}} to use it, Lucius feels familiar after working with Hamlet. With this understanding, I began migrating my Sass by writing some Lucius variables at the top of my \code{.lucius} file:
+Lucius supports fairly standard features to simplify generating CSS. In addition to interpolation, it supports another, immensely useful feature: CSS variables. Other than the surprising (and unfriendly) syntactic detail that we write \code{@foo} to define a variable and \code{\#\{foo\}} to use it, variables in Lucius feel familiar after working with Hamlet. With this understanding, I begin migrating my Sass by writing some Lucius variables at the top of my \code{.lucius} file:
 
 \begin{Verbatim}
 @textcolor: #333;
@@ -68,7 +68,7 @@ Lucius supports fairly standard features to simplify generating CSS. In addition
 @halfSpacing: 10px;
 \end{Verbatim}
 
-Here, \code{@spacing} and \code{@halfspacing} supported the grid on which I originally designed the layout and opened up a new possibility that, should I ever wish to adjust this grid, I might well be able to do so simply by changing these variables. However, this potential is limited somewhat by encountered another, unfortunate limitation I found while experimenting with this new idea: Lucius variables cannot invoke other Lucius variables. When we write, for instance: 
+Here, \code{@spacing} and \code{@halfspacing} support the grid on which the front-end design is based and open up a new possibility that, should I ever wish to adjust this grid, I might well be able to do so simply by changing these variables. However, this potential is limited somewhat by an unfortunate limitation of Lucius: variables are treated as literal text and thus cannot invoke other variables! When we write, for instance: 
 
 \begin{Verbatim}
 @spacing: 20px;
@@ -87,29 +87,201 @@ body {
 }
 \end{Verbatim}
 
-If Lucius supported either nested variables or some notion of compile-time calculation with variables, I might be able to scale nearly every element on the page according to the \code{@spacing}. It's disappointing that Yesod ships with this limitation, but it downright disheartens me that Lucius does not even notice that it's parsing very clearly invalid CSS!
+If Lucius supported either nested variables or some notion of compile-time calculation with variables, I might be able to scale nearly every element on the page according to the \code{@spacing}. It's disappointing that Yesod ships with this limitation, but it downright disheartens me that Lucius does not even notice that it's generating obviously invalid CSS!
 
-Then, I updated my CSS to take advantage of all three forms of interpolation as well as nested selectors.
+\subsubsection{Nested scopes} \label{luciusNestedScopes}
 
-Topics:
-\begin{itemize}
-  \item Hamlet: went pretty smoothly, Initially had to cut out lots of features as NYI.
-  \item Lucius/Cassius: oh, man. Whole subsection(s), whole big thing.
-\end{itemize}
+Lucius also allows us to nest selectors, and it will unpack these selectors when it generates final CSS. For instance, my masthead CSS takes full advantage of this feature:
 
-%   Migrate main HTML template, creating a list of features snipped out:
-%     Christmas mode
-%     Mobile menu
-%     Meals served & last meal
-%     Announcements
-%     Main menu
-%     Flash notice and alert
-%     Footer: current year
-%     Footer: login link
-%   Migrate main CSS stylesheet to Lucius:
-%     Integrate variables where appropriate
-%     Convert image URLs to StaticR resources for compile-time safety
-%     Nest CSS with shared tags (e.g. all .masthead selectors)
+\begin{Verbatim}
+.masthead {
+  background-color: #{pageBGDark};
+  padding: #{spacing};
+  text-align: center;
+  
+  box-shadow: 0 0 20px black;
+
+  a img {
+  display: block;
+  ^{centering "200px"}
+  }
+  
+  .logo {
+    margin-bottom: #{spacing};
+  }
+
+  h2 {
+    margin-top: 30px;
+    margin-bottom: 0;
+  }
+}
+\end{Verbatim}
+
+Let's consider this example in detail. First, we see three variables being interpolated: \code{pageBGDark}, followed by \code{spacing} twice. (The shadow does not use \code{\#\{spacing\}} variable because I choose to keep the shadows separate from the rest of the grid.) We also see template interpolation with \code{\^{}\{centering "200px"\}}; we'll discuss this in the \nameref{luciusMixins} section. Of particular note, though, is that within the \code{.masthead} selector, we see both CSS properties \emph{and additional selectors}. At compile time, Lucius unpacks these nested selectors, prepending \code{.masthead} to each one. This particular section compiles to the final CSS:
+
+\begin{Verbatim}
+.masthead {
+    background-color: #382916;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 0 20px black;
+}
+.masthead a img {
+    display: block;
+    width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.masthead .logo {
+    margin-bottom: 20px;
+}
+.masthead h2 {
+    margin-top: 30px;
+    margin-bottom: 0;
+}
+.masthead p {
+    color: white;
+    margin: 0;
+}
+\end{Verbatim}
+
+\subsubsection{Mixins} \label{luciusMixins}
+
+Lucius mixins --- CSS-specific templates written using QuasiQuoters and included using template interpolation --- are where I first experience the growing pains of learning Yesod. In my experience, when learning a new framework, there's almost always some, unforeseen hurdle that at least temporarily destroys my enthusiasm and for the first time makes me question my choice of framework. In Yesod, my first significant hurdle is the Lucius mixin system. 
+
+The Yesod book's example \cite{ybkShakes} appears simple enough:
+
+\begin{Verbatim}
+-- Our mixin, which provides a number of vendor prefixes for transitions.
+transition val =
+    [luciusMixin|
+        -webkit-transition: #{val};
+        -moz-transition: #{val};
+        -ms-transition: #{val};
+        -o-transition: #{val};
+        transition: #{val};
+    |]
+\end{Verbatim}
+
+Essentially, this is simply a Lucius-specific QuasiQuoter that takes arbitrary text and uses it in a CSS block. 
+
+In the example in the \nameref{luciusNestedScopes} section, the template interpolation \code{\^{}\{centering "200px"\}} is defined as a mixin. It's very simple: it sets width according to its \code{width} parameter and sets left and right margins to \code{auto}, which is a standard way to center block-level HTML elements. Given that this is a common pattern in CSS, it's a good candidate for a Lucius mixin. 
+
+Following the Yesod book's example, I first try simply writing my QuasiQuoter in my Lucius file, right below my variable definitions. (After all, where else would my CSS go?) I write:
+
+\begin{Verbatim}
+centering width =
+  [luciusMixin|
+    width: #{width};
+    margin-left: auto;
+    margin-right: auto;
+  |]
+\end{Verbatim}
+
+Unfortunately, Yesod seems to be unaware of the QuasiQuoter. Since the mixin QuasiQuoter shares syntax with Lucius variable interpolation, and since I don't have a variable named \code{width} defined in my Lucius file, GHC produces a compilation error:
+
+\begin{Verbatim}
+error: Variable not in scope: width
+    |
+163 |             $(widgetFile "default-layout")
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+\end{Verbatim}
+
+To confirm that this misunderstanding of variable interpolation is the cause of the compilation error and to confirm that Lucius mixins can't appear in Lucius files, we can simply remove the variable interpolation:
+
+\begin{Verbatim}
+centering width =
+  [luciusMixin|
+    width: width;
+    margin-left: auto;
+    margin-right: auto;
+  |]
+\end{Verbatim}
+
+With this modification, the Yesod application compiles, and it produces this same text, verbatim, in the generated CSS file. Clearly, something is amiss with our attempted use of mixins.
+
+\subsubsection{Troubleshooting mixins} 
+
+Close inspection of the Yesod book's mixin example \cite{ybkShakes} reveals that it actually declares its mixin as a Haskell function that's in scope when the layout is rendered. With great hesitation, and in the name of learning Yesod, I consent to moving my mixin into Foundations.hs, from where the renderer is invoked.
+
+In order to limit the function's scope appropriately, we follow the convention in the scaffolded file and use a \code{let} clause to declare the function locally within the \code{defaultLayout} widget \todo{See widgets section for more details}:
+
+\begin{Verbatim}
+defaultLayout :: Widget -> Handler Html
+defaultLayout widget = do
+  ...
+  let centering width =
+        [luciusMixin|
+          width: #{width};
+          margin-left: auto;
+          margin-right: auto;
+        |]
+  ...
+\end{Verbatim}
+
+Unfortunately, just as the Yesod book warns \cite{ybkHaskell}, GHC complains of an ambiguous type for \code{width}. Specifically, Yesod uses the \code{OverloadedStrings} pragma to overload the \code{String} type such that either \code{String} or \code{Text} may represent a string, and in this case, GHC doesn't know which to use. Both class and the Yesod book mention the \code{ExtendedDefaultRules} pragma as a potential way to resolve this ambiguity. However, since both class and the Yesod book independently chasten us against relying on \code{ExtendedDefaultRules}, we instead search for an alternate, Dr. Jones-approved solution such as a type annotation.
+
+The first challenge in creating a type annotation is determining what type the QuasiQuoter returns! Since QuasiQuoters are embedded Template Haskell, we brace ourselves for a complex, difficult-to-parse answer. We search Google and find no useful results. (This is left as an exercise for the reader.) We search Hoogle for ``luciusMixin'' and find no results. We check the Yesod wiki \cite{yesodWiki} and find that (a) it simply links to a Markdown file within a Yesod cookbook GitHub repository and (b) all its links appear to be broken! We pause briefly to catch our breath and let a wave of frustration pass.
+
+Eventually, we find a Yesod blog post \cite{yesodBlogShakespeareCSS} that explains that, unfortunately, Yesod introduced Lucius mixins but did not support reloading mixins automatically when they changed during development until version 1.0.6.1. Noting that version number looks suspiciously like the Yesod 1.0.6.5 we are using through Stack, and that the blog post is dated July 1, 2013, we begin to question whether our version of Yesod even supports the syntax specified in the Yesod book! (Answer: it does; Shakespeare's version numbers don't appear to have any correlation to Yesod's version numbers.)
+
+Eventually, we locate the \code{Text.Lucius} module \cite{apiTextLucius} in the Shakespeare package with help from Hackage. We observe that \code{\frenchspacing luciusMixin :: QuasiQuoter}, which seems unhelpful and unlikely to be correct (and is, indeed, wrong). We fire up GHCi and attempt to \code{import Text.Lucius}, but to no avail: either GHCi doesn't know about Stack, or Yesod's custom import system has foiled us.
+
+A technique long honed by savvy Ruby on Rails developers (such as I) saves the day: if we simply provide an incorrect type annotation, perhaps GHC will tell us what it was expecting to see! A helpful StackOverflow answer \cite{soLetTypes} explains that by adding the \code{ScopedTypeVariables} language pragma, we can provide type annotations inside \code{let} statements. Thus, we ask Stack to run our application with our mixin defined as:
+
+\begin{Verbatim}
+defaultLayout :: Widget -> Handler Html
+defaultLayout widget = do
+  ...
+  -- Define Lucius mixins
+  let centering :: Text -> Int
+      centering width =
+        [luciusMixin|
+          width: #{width};
+          margin-left: auto;
+          margin-right: auto;
+        |]
+  ...
+\end{Verbatim}
+
+As desired and expected, GHC catches our incorrect type and very helpfully states:
+
+\begin{Verbatim}
+    • Couldn't match expected type ‘Mixin’ with actual type ‘Int’
+    • In the first argument of ‘Text.Internal.Css.CDMixin’, namely
+        ‘(centering "200px")’
+      In the expression: Text.Internal.Css.CDMixin (centering "200px")
+      In the expression:
+        ((Text.Shakespeare.Base.DerefBranch
+            (Text.Shakespeare.Base.DerefIdent
+               (Text.Shakespeare.Base.Ident "centering")))
+           (Text.Shakespeare.Base.DerefString "200px"), 
+         Text.Internal.Css.CDMixin (centering "200px"))
+    |
+163 |             $(widgetFile "default-layout")
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+\end{Verbatim}
+
+Eureka! We adjust our mixin accordingly:
+
+\begin{Verbatim}
+defaultLayout :: Widget -> Handler Html
+defaultLayout widget = do
+  ...
+  -- Define Lucius mixins
+  let centering :: Text -> Mixin
+      centering width =
+        [luciusMixin|
+          width: #{width};
+          margin-left: auto;
+          margin-right: auto;
+        |]
+  ...
+\end{Verbatim}
+
+And, at long last, the mixin compiles and works correctly, generating the code seen in \nameref{luciusNestedScopes}! 
+
 %     Mixins:
 %       - Can't use the Yesod book's quasi-quoters readily in the scaffolded Yesod site, either in the Lucius file or in src/Foundation.hs (where defaultLayout is defined), because I need to annotate a type manually to deal with string overloading (Text vs. [char]), and I can't easily find the type of the QuasiQuoter used (because it far exceeds my level of knowledge of Haskell, GHCI, QuasiQuoters, and Yesod). 
 %       - Google doesn't have any usable documentation on this that I've found.

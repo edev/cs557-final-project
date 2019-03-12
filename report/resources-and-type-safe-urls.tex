@@ -1,6 +1,8 @@
 \section{Resources and type-safe URIs} \label{resourcesAndTSURIs}
 
-To represent \term{routes}, which are mappings from URIs to server-side code, Yesod uses what it calls resources. A \term{resource} is a \code{data} constructor that acts as the canonical name of the route in views \cite{ybk}. For instance, the default site scaffold includes a static route of the form:
+One of the first concepts we need to discuss in Yesod, and one of the clearest examples of applying Haskell type safety to an unexpected domain, is the problem of constructing a routing system to bind certain URIs to associated server-side actions.
+
+The most fundamental term here, one which Yesod shares with many other Web frameworks, is the \term{route}, which is a mapping from a URI to server-side code. To represent routes, Yesod uses what it calls resources. A \term{resource} is a \code{data} constructor that acts as the canonical name of the route in views \cite{ybk}. For instance, the default site scaffold includes a static route of the form:
 
 \begin{Verbatim}
 /static StaticR Static appStatic
@@ -28,7 +30,7 @@ There are two primary benefits to this approach, both of which leverage Haskell 
 <img ... src="@{StaticR img_logo_jpg}" ... />
 \end{Verbatim}
 
-GHC will detect the issue for us and (rather obtusely) notify us of the issue with a compile-time error:
+GHC detects the issue for us and (rather obtusely) notifies us of the issue with a compile-time error:
 
 \begin{Verbatim}
     • Variable not in scope: img_logo_jpg :: Route Static
@@ -46,7 +48,7 @@ In effect, Yesod automatically tests every internal link at compile time, withou
 /dynamic StaticR Static appStatic
 \end{Verbatim}
 
-And all of our generated links to that route will automatically update when we recompile:
+And all of our generated links to that route automatically update when we recompile:
 
 \begin{Verbatim}
 <img ... src="http://localhost:3000/dynamic/img/logo.png?etag=GVVUzjtL" ... />
