@@ -1,0 +1,13 @@
+\section{Widgets}
+
+Some initial notes:
+
+Widgets are reusable bits of HTML, CSS, and Javascript, but they're treated differently than, say, file includes in PHP.
+
+First, they're resolved at compile time, so you don't have the issue of sending out the header and then - whoops! - deciding you need to add shit to it. This can make it easier to couple HTML, CSS, and Javascript in your logic if, say, you need to add a navigation menu that requires all three. (That's an example from the Widgets book chapter.)
+
+Second, they have specific, associated logic: ``Different components have different semantics. For example, there can only be one title, but there can be multiple external scripts and stylesheets. However, those external scripts and stylesheets should only be included once. Arbitrary head and body content, on the other hand, has no limitation (someone may want to have five lorem ipsum blocks after all).''
+
+Section ``combining widgets'' talks about combining them using monads: Widget is an instance of Monad, which lets you combine those associated bits of page content into a single widget that you can then include. So you can use do notation to, say, provide the HTML, CSS, and JS for a navigation menu all in one widget that you can include with a couple strokes of your fingers.
+
+The main page content needs to be a whamlet, because a whamlet can handle widget monads, whereas actual Hamlet can only embed Hamlet.
