@@ -16,7 +16,7 @@ Comment json -- Adding "json" causes ToJSON and FromJSON instances to be derived
     userId UserId Maybe
     deriving Eq
     deriving Show
-Page
+BasicPage
   title Text
   path Text Maybe
   menuOrder Int64 Maybe
