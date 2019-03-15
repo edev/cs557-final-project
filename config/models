@@ -17,10 +17,10 @@ Comment json -- Adding "json" causes ToJSON and FromJSON instances to be derived
     deriving Eq
     deriving Show
 BasicPage
-  title Text
-  path Text Maybe
-  menuOrder Int64 Maybe
-  menuText Text Maybe
-  content Text
-  UniquePath path !force -- !force allows a nullable unique constraint where NULL /= NULL. We want this.
-  UniqueMenuOrder menuOrder !force
+    title Text
+    path Text Maybe
+    menuOrder Int64 Maybe
+    menuText Text Maybe
+    content Text
+    UniquePath path !force -- !force allows a nullable unique constraint where NULL /= NULL. We want this.
+    UniqueMenuOrder menuOrder !force
