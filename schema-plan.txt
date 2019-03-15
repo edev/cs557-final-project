@@ -1,0 +1,9 @@
+The following is my planned database schema.
+
+Page:
+  title
+  path
+  menu_order
+  menu_text
+  content
+
