@@ -62,6 +62,15 @@ In order to maximize the value of this Yesod experiment, I skip over a number of
   \item Sessions
 \end{itemize}
 
+\todo{Contain this knowledge in new sections, etc.}
+
+Make new Parts: Learning the Basics and Adding Features.
+
+More about routing:
+  Yesod safely breaks routes into data types that are instances of PathPiece and requires us to define two-way conversions between Text and the PathPiece instance type. Converting from text returns a Maybe value, which allows us to guard against invalid input and guarantee that we're passing valid inputs into our route handlers.
+  There are three types of path pieces: static text that must be matched exactly, single pieces (denoted by the # symbol followed by the name of a PathPiece instance type), and multi-pieces (denoted by * followed by the type) that can match any number of pieces (as long as the fromPathMultiPiece function definition is satisfied). (Where do I put my instance declarations in the scaffolded site? Hm. Need to check the Scaffolded Site chapter.)
+  By default, Yesod disallows overlapping routes at compile time. To override this, add ! before a route to disable its overlap checking. In this case, the first matching route wins. (I'll need to use this.)
+  The resource constructor gets arguments that match the PathPiece and PathMultiPiece types.
 \section{Reflections}
 
 \todo{Collect these thoughts into a real, formalized section in its own file.}
