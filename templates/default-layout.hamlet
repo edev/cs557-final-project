@@ -1,7 +1,14 @@
 <!-- SECTION: Bounty stuff (obviously WIP) -->
 <nav .mobile>
   <ul>
-    <li>Menu items go here. 
+    $forall (path, title) <- menuItems
+      $with curpath <- BasicPageR (PagePath path)
+        $if Just curpath == mcurrentRoute
+          <li .current>
+            <a href=@{curpath}>#{title}
+        $else 
+          <li>
+            <a href=@{curpath}>#{title}
   <h2>
     Menu
 
@@ -25,8 +32,14 @@
     <div #nav-content-wrapper>
       <nav .primary>
         <ul>
-          <li>Main menu goes here.
-
+          $forall (path, title) <- menuItems
+            $with curpath <- BasicPageR (PagePath path)
+              $if Just curpath == mcurrentRoute
+                <li .current>
+                  <a href=@{curpath}>#{title}
+              $else 
+                <li>
+                  <a href=@{curpath}>#{title}
       <div .content-area>
         ^{widget}
 

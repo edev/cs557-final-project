@@ -111,7 +111,7 @@ instance Yesod App where
         -- mmsg <- getMessage
 
         -- muser <- maybeAuthPair
-        -- mcurrentRoute <- getCurrentRoute
+        mcurrentRoute <- getCurrentRoute
 
         -- Get the breadcrumbs, as defined in the YesodBreadcrumbs instance.
         -- (title, parents) <- breadcrumbs
@@ -154,6 +154,13 @@ instance Yesod App where
                 margin-left: auto;
                 margin-right: auto;
               |]
+
+        -- Remember to talk about how this goes in Foundation rather than
+        -- Handler.BasicPage so that it can be shared across the site.
+        -- If we add an Admin section, it will be a subsite, and THAT
+        -- is beyond our scope, which is a great place to stop the project.
+        pageList <- runDB (selectList [] [Asc BasicPageMenuOrder])
+        let menuItems = [(path, title) | (Entity _ (BasicPage _ (Just path) (Just order) (Just title) _)) <- pageList]
 
         -- We break up the default layout into two components:
         -- default-layout is the contents of the body tag, and
@@ -331,7 +338,13 @@ instance PathMultiPiece PagePath where
   --
   -- To do this, we'll use Data.Text.breakOn to split our Text
   -- on "/" characters (while safely ignoring a leading "/").
-  toPathMultiPiece (PagePath p) = T.splitOn "/" p
+  toPathMultiPiece (PagePath p) = 
+    case T.unpack p of
+      [] -> []
+      ['/'] -> []
+      ('/':rest) -> T.splitOn "/" (T.pack rest)
+      _ -> T.splitOn "/" p
+        
 
   -- fromPathPiece converts from [Text] to a PagePath.
   -- We could query the database here to verify that

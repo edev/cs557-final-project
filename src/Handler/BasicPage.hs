@@ -15,3 +15,4 @@ getBasicPageR (PagePath pagePath) = do
                 setTitle (toHtml title)
                 $(widgetFile "basicpage")
         Nothing -> notFound -- No page with this path exists in the DB.
+
