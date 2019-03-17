@@ -24,3 +24,5 @@ BasicPage
     content Text
     UniquePath path !force -- !force allows a nullable unique constraint where NULL /= NULL. We want this.
     UniqueMenuOrder menuOrder !force
+    deriving Eq
+    deriving Show

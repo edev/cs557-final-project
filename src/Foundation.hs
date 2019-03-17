@@ -31,6 +31,9 @@ import qualified Data.Text.Encoding as TE
 -- To support Lucius mixins
 import Text.Lucius
 
+-- For route pieces
+import qualified Data.Text as T
+
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
 -- starts running, such as database connections. Every handler will have
@@ -104,44 +107,44 @@ instance Yesod App where
 
     defaultLayout :: Widget -> Handler Html
     defaultLayout widget = do
-        master <- getYesod
-        mmsg <- getMessage
+        -- master <- getYesod
+        -- mmsg <- getMessage
 
-        muser <- maybeAuthPair
-        mcurrentRoute <- getCurrentRoute
+        -- muser <- maybeAuthPair
+        -- mcurrentRoute <- getCurrentRoute
 
         -- Get the breadcrumbs, as defined in the YesodBreadcrumbs instance.
-        (title, parents) <- breadcrumbs
+        -- (title, parents) <- breadcrumbs
 
         -- Define the menu items of the header.
-        let menuItems =
-                [ NavbarLeft $ MenuItem
-                    { menuItemLabel = "Home"
-                    , menuItemRoute = HomeR
-                    , menuItemAccessCallback = True
-                    }
-                , NavbarLeft $ MenuItem
-                    { menuItemLabel = "Profile"
-                    , menuItemRoute = ProfileR
-                    , menuItemAccessCallback = isJust muser
-                    }
-                , NavbarRight $ MenuItem
-                    { menuItemLabel = "Login"
-                    , menuItemRoute = AuthR LoginR
-                    , menuItemAccessCallback = isNothing muser
-                    }
-                , NavbarRight $ MenuItem
-                    { menuItemLabel = "Logout"
-                    , menuItemRoute = AuthR LogoutR
-                    , menuItemAccessCallback = isJust muser
-                    }
-                ]
+        -- let menuItems =
+        --         [ NavbarLeft $ MenuItem
+        --             { menuItemLabel = "Home"
+        --             , menuItemRoute = HomeR
+        --             , menuItemAccessCallback = True
+        --             }
+        --         , NavbarLeft $ MenuItem
+        --             { menuItemLabel = "Profile"
+        --             , menuItemRoute = ProfileR
+        --             , menuItemAccessCallback = isJust muser
+        --             }
+        --         , NavbarRight $ MenuItem
+        --             { menuItemLabel = "Login"
+        --             , menuItemRoute = AuthR LoginR
+        --             , menuItemAccessCallback = isNothing muser
+        --             }
+        --         , NavbarRight $ MenuItem
+        --             { menuItemLabel = "Logout"
+        --             , menuItemRoute = AuthR LogoutR
+        --             , menuItemAccessCallback = isJust muser
+        --             }
+        --         ]
 
-        let navbarLeftMenuItems = [x | NavbarLeft x <- menuItems]
-        let navbarRightMenuItems = [x | NavbarRight x <- menuItems]
+        -- let navbarLeftMenuItems = [x | NavbarLeft x <- menuItems]
+        -- let navbarRightMenuItems = [x | NavbarRight x <- menuItems]
 
-        let navbarLeftFilteredMenuItems = [x | x <- navbarLeftMenuItems, menuItemAccessCallback x]
-        let navbarRightFilteredMenuItems = [x | x <- navbarRightMenuItems, menuItemAccessCallback x]
+        -- let navbarLeftFilteredMenuItems = [x | x <- navbarLeftMenuItems, menuItemAccessCallback x]
+        -- let navbarRightFilteredMenuItems = [x | x <- navbarRightMenuItems, menuItemAccessCallback x]
 
         -- Define Lucius mixins
         let centering :: Text -> Mixin
@@ -180,6 +183,7 @@ instance Yesod App where
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
     isAuthorized (StaticR _) _ = return Authorized
+    isAuthorized (BasicPageR _) _ = return Authorized
 
     -- the profile route requires that the user is authenticated, so we
     -- delegate to that function
@@ -309,3 +313,37 @@ unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
 -- https://github.com/yesodweb/yesod/wiki/Sending-email
 -- https://github.com/yesodweb/yesod/wiki/Serve-static-files-from-a-separate-domain
 -- https://github.com/yesodweb/yesod/wiki/i18n-messages-in-the-scaffolding
+
+-- Define the PagePath type needed for our BasicPageR route.
+newtype PagePath = PagePath Text
+  deriving (Eq, Show, Read)
+
+-- Define converstions between PathPath and Text.
+instance PathMultiPiece PagePath where
+  -- toPathMultiPiece converts from a PagePath to [Text].
+  -- The essential task here is to break a relative path such as
+  --   "/foo/bar/baz"
+  -- or
+  --   "/foo/bar/baz/"
+  -- to a list of tokens. In either case above, correct
+  -- tokenization would be:
+  --  ["foo", "bar", "baz"]
+  --
+  -- To do this, we'll use Data.Text.breakOn to split our Text
+  -- on "/" characters (while safely ignoring a leading "/").
+  toPathMultiPiece (PagePath p) = T.splitOn "/" p
+
+  -- fromPathPiece converts from [Text] to a PagePath.
+  -- We could query the database here to verify that
+  -- the path exists, but that functionality is best
+  -- left to the handler, for a variety of reasons.
+  -- We simply need to join a list of Text objects
+  -- with "/" characters, plus a leading "/" character.
+  -- In the case of "/", we want to produce the value "/"
+  -- so that "/" can represent the homepage path in our
+  -- DB, following the existing scheme.
+  fromPathMultiPiece ts =
+    case ts of
+      [] -> Just (PagePath "/")
+      _  -> Just (PagePath (concat $ map ("/" ++) ts))
+

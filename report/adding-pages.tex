@@ -74,6 +74,105 @@ Having said that, I take the same issue with Persistent that I take with ActiveR
 
 \subsection{Adding a dynamic route}
 
+In order to create a new route to receive requests for these database-backed pages, we first need to learn a bit more about Yesod's routing system. First, we'll discuss more advanced routes, and then we'll discuss the handlers that process them.
+
+\subsubsection{Routing with PathPieces}
+
+Yesod breaks routes into pieces, delimited by \code{/}, and parses them using data types that are instances of the \code{PathPiece} tyepclass. It does so in a way that protects us from the details of parsing full routes and provides us with one, canonical URI for any given page \cite{ybkRouting}. There are three types of path pieces:
+
+\begin{itemize}
+  \item \term{Static text} must be matched exactly. The \code{/static} route discussed previously is static text.
+  \item \term{Single pieces} are a single token (as defined by the \code{/} delimiters in the URI). We denote a single piece with the \code{\#} symbol followed by the name of a type that's an instance of the \code{PathPiece} type class.
+  \item \term{Multi-pieces} can match any number of pieces. We denote multi-pieces with the \code{*} symbol followed by an instance of the \code{PathMultiPiece} typeclass. A multi-piece must be the last piece in a route.
+\end{itemize}
+
+\paragraph{Conversions} The \code{PathPiece} and \code{PathMultiPiece} typeclasses require us to define two-way conversions between \code{Text} and the instance type. Converting from \code{Text} returns a \code{Maybe} value, which allows us to guard against invalid input and guarantee that we're passing valid inputs into our route handlers. For instance, a multi-piece may enforce arbitrary constraints in its function \code{\frenchspacing fromPathMultiPiece :: PathMultiPiece s => [Text] -> Maybe s}; if it returns \code{Nothing}, the handler is never even invoked.
+
+\paragraph{Ambiguous routes} By default, Yesod disallows routes that overlap and thus provide ambiguity. We can (and, in our case, must) override this behavior and explicitly allow certain routes to overlap by prefacing them with a \code{!} symbol. Yesod's rule when multiple routes match, which is common in routing systems, is that the first route wins \cite{ybkRouting}.
+
+\subsubsection{Adding the route}
+
+Our route itself is conceptually very simple: it will attempt to match any page that has not already matched a route against the known paths in our new database table. We'll use a multi-piece to allow pages to nest as needed, and we'll name our resource after the \code{BasicPath} table. Since only the \code{GET} HTTP method makes sense here, we will restrict our route to that method:
+
+\begin{Verbatim}
+!/*PagePath BasicPageR GET
+\end{Verbatim}
+
+The Yesod book does not precisely describe where to place our definition for \code{PagePath}'s membership in the \code{PathPiece} typeclass, but perhaps GHC can help us out. By running the application with the route (but without a handler or a definition for \code{instance PagePath PathPiece}), we can see where the definition is needed and make an educated guess about where it might belong. Sure enough, we see a helpful error (edited for clarity):
+
+\begin{Verbatim}
+[ 6 of 12] Compiling Foundation       ( src/Foundation.hs, ...)
+
+src/Foundation.hs:68:1: error:
+    Not in scope: type constructor or class ‘PagePath’
+   |
+68 | mkYesodData "App" $(parseRoutesFile "config/routes")
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+\end{Verbatim}
+
+Following the Yesod book's example \cite{ybkRouting}, we define our own \code{PagePath} type and define its instantiation into \code{PathMultiPiece} (as well as a few base classes), and we place the definition at the bottom of \code{src/Foundation.hs}:
+
+\begin{Verbatim}
+-- Define the PagePath type needed for our BasicPageR route.
+newtype PagePath = PagePath Text
+  deriving (Eq, Show, Read)
+
+-- Define converstions between PathPath and Text.
+instance PathMultiPiece PagePath where
+  -- toPathMultiPiece converts from a PagePath to [Text].
+  -- The essential task here is to break a relative path such as
+  --   "/foo/bar/baz"
+  -- or
+  --   "/foo/bar/baz/"
+  -- to a list of tokens. In either case above, correct
+  -- tokenization would be:
+  --  ["foo", "bar", "baz"]
+  --
+  -- To do this, we'll use Data.Text.breakOn to split our Text
+  -- on "/" characters (while safely ignoring a leading "/").
+  toPathMultiPiece (PagePath p) = T.splitOn "/" p
+
+  -- fromPathPiece converts from [Text] to a PagePath.
+  -- We could query the database here to verify that
+  -- the path exists, but that functionality is best
+  -- left to the handler, for a variety of reasons.
+  -- We simply need to join a list of Text objects
+  -- with "/" characters, plus a leading "/" character.
+  -- In the case of "/", we want to produce the value "/"
+  -- so that "/" can represent the homepage path in our
+  -- DB, following the existing scheme.
+  fromPathMultiPiece ts =
+    case ts of
+      [] -> Just (PagePath "/")
+      _  -> Just (PagePath (concat $ map ("/" ++) ts))
+\end{Verbatim}
+
+\todo{Flesh all this out and explain in detail.}
+
+An initial handler to verify that pages work correctly:
+
+\begin{Verbatim}
+getBasicPageR :: PagePath -> Handler Html
+getBasicPageR (PagePath path) = defaultLayout $ do
+      case path of
+        "/" -> [whamlet|Home page: /|]
+        _ -> [whamlet|Path: #{path}|]
+\end{Verbatim}
+
+Sure enough, visiting \code{localhost:3000} produces a beautiful Bounty webpage with the body text:
+
+\begin{Verbatim}
+Home page: /
+\end{Verbatim}
+
+And visiting \code{http://localhost:3000/abc/def} produces the body text:
+
+\begin{Verbatim}
+Path: /abc/def
+\end{Verbatim}
+
+Now we can add database interactivity.
 \todo{Contain this knowledge in new sections, etc.}
 
 Make new Parts: Learning the Basics and Adding Features.
