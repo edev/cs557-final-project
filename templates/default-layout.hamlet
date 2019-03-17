@@ -5,7 +5,7 @@
   <h2>
     Menu
 
-<div #pageContainer>
+<div #page-container>
   <header .masthead>
     <img class="logo" src="@{StaticR img_logo_png}" alt="Sharing God's Bounty logo, a cornucopia originally designed in the 1980s" height=200 />
     <section .find-us>
