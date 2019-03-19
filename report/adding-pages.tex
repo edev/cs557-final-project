@@ -1,4 +1,4 @@
-\section{Database-stored content pages}
+\section{Storing pages in a database}
 
 Now that we've covered most of the basics, we can look at adding new features to the scaffolded application. Given the stated scope and the time constraint of the project, our focus is on adding a narrow, vertical slice of features designed to let us learn about, experience, and discuss Haskell and Yesod. These features are \emph{not} designed to be production-ready but rather to fulfill these stated objectives. The first set of new features we add includes the ability to store pages in a database, associate them with URIs, and display them.
 
@@ -72,13 +72,13 @@ BasicPage
 
 Having said that, I take the same issue with Persistent that I take with ActiveRecord. Both DSLs attempt to solve the database problem space entirely in their host languages. In doing so, both DSLs take reductive views of databases that belie the power of a full-fledged DBMS. Both DSLs are well-suited to simple data stores like SQLite. As a SQL-literate developer, though, I prefer to take full advantage of a highly tuned, enormously powerful DBMS like Postgresql or Microsoft SQL Server. It is my personal opinion that when using a fully featured DBMS to its full advantage, a heavy-handed database abstraction layer simply gets in the way. Perhaps Persistent might work well in this use case with its migrations disabled (and without utilizing unique constraints), but I have my doubts. In either case, this particular query is well beyond the scope of this project.
 
-\subsection{Adding a dynamic route}
+\section{Adding a dynamic route}
 
 In order to create a new route to receive requests for these database-backed pages, we first need to learn a bit more about Yesod's routing system. First, we'll discuss more advanced routes, and then we'll discuss the handlers that process them.
 
 \subsubsection{Routing with PathPieces}
 
-Yesod breaks routes into pieces, delimited by \code{/}, and parses them using data types that are instances of the \code{PathPiece} tyepclass. It does so in a way that protects us from the details of parsing full routes and provides us with one, canonical URI for any given page \cite{ybkRouting}. There are three types of path pieces:
+Yesod breaks routes into pieces, delimited by \code{/}, and parses them using data types that are instances of either the \code{PathPiece} or \code{PathMultiPiece} tyepclasses. It does so in a way that protects us from the details of parsing full routes and provides us with one, canonical URI for any given page \cite{ybkRouting}. There are three types of path pieces:
 
 \begin{itemize}
   \item \term{Static text} must be matched exactly. The \code{/static} route discussed previously is static text.
@@ -86,7 +86,7 @@ Yesod breaks routes into pieces, delimited by \code{/}, and parses them using da
   \item \term{Multi-pieces} can match any number of pieces. We denote multi-pieces with the \code{*} symbol followed by an instance of the \code{PathMultiPiece} typeclass. A multi-piece must be the last piece in a route.
 \end{itemize}
 
-\paragraph{Conversions} The \code{PathPiece} and \code{PathMultiPiece} typeclasses require us to define two-way conversions between \code{Text} and the instance type. Converting from \code{Text} returns a \code{Maybe} value, which allows us to guard against invalid input and guarantee that we're passing valid inputs into our route handlers. For instance, a multi-piece may enforce arbitrary constraints in its function \code{\frenchspacing fromPathMultiPiece :: PathMultiPiece s => [Text] -> Maybe s}; if it returns \code{Nothing}, the handler is never even invoked.
+\paragraph{Conversions} The \code{PathPiece} and \code{PathMultiPiece} typeclasses require us to define two-way conversions. \code{PathPiece} requires conversions between \code{Text} and the instance type. \code{PathMultiPiece} requires conversions beetween \code{[Text]} and the instance type. Converting from \code{Text} or \code{[Text]} returns a \code{Maybe} value, which allows us to guard against invalid input and guarantee that we're passing valid inputs into our route handlers. For instance, a multi-piece may enforce arbitrary constraints in its function \code{\frenchspacing fromPathMultiPiece :: PathMultiPiece s => [Text] -> Maybe s}; if it returns \code{Nothing}, the handler is never even invoked.
 
 \paragraph{Ambiguous routes} By default, Yesod disallows routes that overlap and thus provide ambiguity. We can (and, in our case, must) override this behavior and explicitly allow certain routes to overlap by prefacing them with a \code{!} symbol. Yesod's rule when multiple routes match, which is common in routing systems, is that the first route wins \cite{ybkRouting}.
 
@@ -113,8 +113,6 @@ src/Foundation.hs:68:1: error:
 
 Following the Yesod book's example \cite{ybkRouting}, we define our own \code{PagePath} type and define its instantiation into \code{PathMultiPiece} (as well as a few base classes), and we place the definition at the bottom of \code{src/Foundation.hs}:
 
-\todo{UPDATE CODE BASED ON COMMITS}
-
 \begin{Verbatim}
 -- Define the PagePath type needed for our BasicPageR route.
 newtype PagePath = PagePath Text
@@ -131,17 +129,27 @@ instance PathMultiPiece PagePath where
   -- tokenization would be:
   --  ["foo", "bar", "baz"]
   --
-  -- To do this, we'll use Data.Text.breakOn to split our Text
-  -- on "/" characters (while safely ignoring a leading "/").
-  toPathMultiPiece (PagePath p) = T.splitOn "/" p
+  -- To do this, we'll unpack our Text to a String
+  -- for pattern-matching, then use Data.Text.splitOn 
+  -- to split our Text on '/' characters while safely
+  -- ignoring a leading '/'. We'll take special care
+  -- to handle the case of p="/", since T.splitOn
+  -- will incorrectly yield ["", ""].
+  toPathMultiPiece (PagePath p) = 
+    case T.unpack p of
+      [] -> []
+      "/" -> []
+      ('/':rest) -> T.splitOn "/" (T.pack rest)
+      _ -> T.splitOn "/" p
+        
 
   -- fromPathPiece converts from [Text] to a PagePath.
   -- We could query the database here to verify that
   -- the path exists, but that functionality is best
   -- left to the handler, for a variety of reasons.
   -- We simply need to join a list of Text objects
-  -- with "/" characters, plus a leading "/" character.
-  -- In the case of "/", we want to produce the value "/"
+  -- with '/' characters, plus a leading '/' character.
+  -- In the case of [], we want to produce the value "/"
   -- so that "/" can represent the homepage path in our
   -- DB, following the existing scheme.
   fromPathMultiPiece ts =
@@ -150,9 +158,9 @@ instance PathMultiPiece PagePath where
       _  -> Just (PagePath (concat $ map ("/" ++) ts))
 \end{Verbatim}
 
-\todo{Flesh all this out and explain in detail.}
+\emph{Note: I assume there's a better way to handle overloaded strings than to unpack, pattern-match, and re-pack, but I had to learn about working with Text values on-the-fly, and I'm way over 32 hours on this project as-is. In terms of performance impact, this website gets 30 requests a day on an exceptionally busy day near Christmastime, so worrying about efficiency here would be a highly premature optimization.}
 
-An initial handler to verify that pages work correctly:
+To verify that our links work correctly, we provide a temporary, initial handler that simply displays the parsed \code{PagePath} in the body of our templated page:
 
 \begin{Verbatim}
 getBasicPageR :: PagePath -> Handler Html
@@ -174,14 +182,58 @@ And visiting \code{http://localhost:3000/abc/def} produces the body text:
 Path: /abc/def
 \end{Verbatim}
 
-Now we can add database interactivity.
-\todo{Contain this knowledge in new sections, etc.}
+Now we can add database interactivity as part of a real handler.
 
-Make new Parts: Learning the Basics and Adding Features.
+\subsection{Adding the handler}
 
-More about routing:
-  Yesod safely breaks routes into data types that are instances of PathPiece and requires us to define two-way conversions between Text and the PathPiece instance type. Converting from text returns a Maybe value, which allows us to guard against invalid input and guarantee that we're passing valid inputs into our route handlers.
-  There are three types of path pieces: static text that must be matched exactly, single pieces (denoted by the \# symbol followed by the name of a PathPiece instance type), and multi-pieces (denoted by * followed by the type) that can match any number of pieces (as long as the fromPathMultiPiece function definition is satisfied). (Where do I put my instance declarations in the scaffolded site? Hm. Need to check the Scaffolded Site chapter.)
-  By default, Yesod disallows overlapping routes at compile time. To override this, add ! before a route to disable its overlap checking. In this case, the first matching route wins. (I'll need to use this.)
-  The resource constructor gets arguments that match the PathPiece and PathMultiPiece types.
+Our route handler, in \code{src/Handler/BasicPage.hs}, is as follows:
+
+\begin{Verbatim}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
+
+module Handler.BasicPage where
+
+import Import
+
+getBasicPageR :: PagePath -> Handler Html
+getBasicPageR (PagePath pagePath) = do
+      -- Try to retrieve the page from the database by looking up
+      -- the path we received from the BasicPageR route.
+      maybePage <- runDB $ getBy (UniquePath (Just pagePath))
+      case maybePage of
+        -- We received a valid page! Great!
+        -- We'll unpack just what we need, discarding the rest,
+        -- and render the layout by following the same basic steps
+        -- as the default HomePageR handler.
+        Just (Entity _ (BasicPage title _ _ _ content)) 
+          -> defaultLayout $ do
+                setTitle (toHtml title)
+                $(widgetFile "basicpage")
+        Nothing -> notFound -- No page with this path exists in the DB.
+\end{Verbatim}
+
+Let's talk about each part in a bit more detail.
+
+First, we use the \code{getBy} function from Persistent to retrieve a page by its path. The \code{getBy} function accepts a unique constraint as its sole argument. From this argument, it infers the needed data types, the table to check, and the column(s) to check. (Ah, the power of the Haskell type system!) In loose terms, it takes variadic arguments: it accepts a unique constraint value, but that value's constructor may require arbitrary arguments. We wrap it in \code{runDB}, which is a convenience function the Yesod scaffolded site provides to pull from a pool of database connections.
+
+Next, we unpack the \code{Maybe (Entity BasicPageId BasicPage)} value we received. If it's \code{Nothing}, the database had no matching row, so we simply use the \code{notFound} helper to terminate our handler with an appropriate response. If we did receive a matching row, then we unpack the fields we need (namely \code {title} and \code{content}), create a widget with those names in scope, and pass the widget into the \code{defaultLayout} renderer.
+
+A \term{widget} is a key concept we skipped previously, but in very brief form, it's comprised of snippets of Hamlet, Lucius, Cassius, and/or Julius code, packed together in a format that Yesod is able to handle intelligently as a single unit. In our case, we just need an exceptionally simple \code{templates/basicpage.hamlet} file:
+
+\begin{Verbatim}
+<h1>#{title}
+#{content}
+\end{Verbatim}
+
+This renders the body of any given page as a widget, using the values we unpacked from the database. When in the default template we invoke:
+
+\begin{Verbatim}
+^{widget}
+\end{Verbatim}
+
+Yesod renders this widget for us.
+
+\emph{Note: I gloss over some minor details here, but to follow along, you'll need to add the new handler to the Cabal file and src/Foundation.hs, probably comment out your HomeR route (and lines that GHC warns you are unused once you remove that route), and tweak your scaffolded authentication. GHC will guide you, for the most part, as it guided me.}
 

@@ -205,7 +205,7 @@ With this modification, the Yesod application compiles, and it produces this sam
 
 Close inspection of the Yesod book's mixin example \cite{ybkShakes} reveals that it actually declares its mixin as a Haskell function that's in scope when the layout is rendered. With great hesitation, and in the name of learning Yesod, I consent to moving my mixin into Foundations.hs, from where the renderer is invoked.
 
-In order to limit the function's scope appropriately, we follow the convention in the scaffolded file and use a \code{let} clause to declare the function locally within the \code{defaultLayout} widget \todo{See widgets section for more details}:
+In order to limit the function's scope appropriately, we follow the convention in the scaffolded file and use a \code{let} clause to declare the function locally within the \code{defaultLayout} function:
 
 \begin{Verbatim}
 defaultLayout :: Widget -> Handler Html
