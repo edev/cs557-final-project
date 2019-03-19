@@ -347,12 +347,16 @@ instance PathMultiPiece PagePath where
   -- tokenization would be:
   --  ["foo", "bar", "baz"]
   --
-  -- To do this, we'll use Data.Text.breakOn to split our Text
-  -- on "/" characters (while safely ignoring a leading "/").
+  -- To do this, we'll unpack our Text to a String
+  -- for pattern-matching, then use Data.Text.splitOn 
+  -- to split our Text on '/' characters while safely
+  -- ignoring a leading '/'. We'll take special care
+  -- to handle the case of p="/", since T.splitOn
+  -- will incorrectly yield ["", ""].
   toPathMultiPiece (PagePath p) = 
     case T.unpack p of
       [] -> []
-      ['/'] -> []
+      "/" -> []
       ('/':rest) -> T.splitOn "/" (T.pack rest)
       _ -> T.splitOn "/" p
         
@@ -362,8 +366,8 @@ instance PathMultiPiece PagePath where
   -- the path exists, but that functionality is best
   -- left to the handler, for a variety of reasons.
   -- We simply need to join a list of Text objects
-  -- with "/" characters, plus a leading "/" character.
-  -- In the case of "/", we want to produce the value "/"
+  -- with '/' characters, plus a leading '/' character.
+  -- In the case of [], we want to produce the value "/"
   -- so that "/" can represent the homepage path in our
   -- DB, following the existing scheme.
   fromPathMultiPiece ts =
