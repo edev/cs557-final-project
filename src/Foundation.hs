@@ -155,12 +155,23 @@ instance Yesod App where
                 margin-right: auto;
               |]
 
-        -- Remember to talk about how this goes in Foundation rather than
-        -- Handler.BasicPage so that it can be shared across the site.
+        -- We place this in defaultLayout rather than Handler.BasicPage
+        -- so that it can be shared across the site. It needs to be
+        -- available anywhere the default-layout template is used, or
+        -- we will run into a compile-time error due to missing menus.
+        --
         -- If we add an Admin section, it will be a subsite, and THAT
         -- is beyond our scope, which is a great place to stop the project.
         pageList <- runDB (selectList [] [Asc BasicPageMenuOrder])
-        let menuItems = [(path, title) | (Entity _ (BasicPage _ (Just path) (Just order) (Just title) _)) <- pageList]
+        let menuItems = 
+              [(pagePath, title) 
+                | (Entity _ 
+                         (BasicPage _ 
+                                    (Just pagePath) 
+                                    _
+                                    (Just title) 
+                                    _)) <- pageList]
+                                                     
 
         -- We break up the default layout into two components:
         -- default-layout is the contents of the body tag, and
