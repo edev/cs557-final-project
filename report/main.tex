@@ -11,6 +11,7 @@
 \usepackage{ragged2e} % For text alignment environments, e.g. \begin{center}
 \usepackage{enumitem} % Allows different list enumerations, like a.) b.) c.)
 \usepackage{nameref} % Allows using \nameref{refname} to insert links to sections by title
+\usepackage{graphicx} % For \includegraphics
 
 % HYPERLINKS
 \usepackage{hyperref} % For \href and \uri
@@ -44,8 +45,6 @@
 
 \input{introduction.tex}
 
-\todo{New section: Cover ``The Basics''? Regardless, need some kind of transition.}
-
 \part{Learning the Basics}
 
 \input{resources-and-type-safe-urls.tex}
@@ -65,32 +64,16 @@ In order to maximize the value of this Yesod experiment, I skip over a number of
 
 \part{Adding New Features}
 
-\input{adding-pages.tex}
+\input{storing-pages.tex}
 
-% Next features:
-% \input{menus.tex}
-% \input{administration.tex}
+\input{dynamic-route.tex}
 
-\section*{GitHub compare URI:}
-https://github.com/edev/cs557-final-project/compare/175b86b..df53a5f
+\input{menu.tex}
 
-\section{Reflections}
+\input{verification.tex}
 
-\todo{Collect these thoughts into a real, formalized section in its own file.}
+\input{reflections.tex}
 
-Reflect on Yesod from the perspective of someone who's just made it through the basics. In particular, TinyOS's observation about being hard for beginners. I feel like I have to be an expert to do almost anything. Every piece of code feels like it's written for experts. And the lack of an accessible API reference (with good documentation) so far seems to be frustrating me.
-
-Three points from TinyOS:
-\begin{enumerate}
-  \item By making it harder to write bugs, you also make it harder to write code
-  \item By making hard things possible, you make easy things hard
-  \item By tailoring the language for expert users, you alienate newcomers and stifle your language's growth.
-\end{enumerate}
-% \input{p2.tex}
-% \input{treeVisualizer.tex}
-% \input{p3.1.tex}
-% \input{p3.2.tex}
-
-\todo{ADD GitHub repo link!}
+\newpage
 \printbibliography
 \end{document}

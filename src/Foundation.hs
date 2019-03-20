@@ -168,9 +168,10 @@ instance Yesod App where
                 | (Entity _ 
                          (BasicPage _ 
                                     (Just pagePath) 
-                                    _
+                                    order
                                     (Just title) 
-                                    _)) <- pageList]
+                                    _)) <- pageList,
+                  order /= Nothing]
                                                      
 
         -- We break up the default layout into two components:

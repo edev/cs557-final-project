@@ -1,0 +1,74 @@
+\section{Storing pages in a database}
+
+Now that we've covered most of the basics, we can look at adding new features to the scaffolded application. Given the stated scope and the time constraint of the project, our focus is on adding a narrow, vertical slice of features designed to let us learn about, experience, and discuss Haskell and Yesod. These features are \emph{not} designed to be production-ready but rather to fulfill these stated objectives. The first set of new features we add includes the ability to store pages in a database, associate them with URIs, and display them.
+
+\subsection{Adding a table to the database}
+
+Our first order of business is to learn enough about Persistent, Yesod's database abstraction layer \cite{ybkPersistent}, to create a new table. Persistent leverages Haskell data types to provide myriad type-safety guarantees going both to and from a backing store (in our case, SQLite). Persistent defines a sum type, \code{PersistValue}, whose constructors map to supported value types we can store in the database. The Yesod book defines \code{PersistValue} as follows \cite{ybkPersistent}:
+
+\begin{Verbatim}
+data PersistValue
+    = PersistText Text
+    | PersistByteString ByteString
+    | PersistInt64 Int64
+    | PersistDouble Double
+    | PersistRational Rational
+    | PersistBool Bool
+    | PersistDay Day
+    | PersistTimeOfDay TimeOfDay
+    | PersistUTCTime UTCTime
+    | PersistNull
+    | PersistList [PersistValue]
+    | PersistMap [(Text, PersistValue)]
+    | PersistObjectId ByteString
+    -- ^ Intended especially for MongoDB backend
+    | PersistDbSpecific ByteString
+    -- ^ Using 'PersistDbSpecific' allows you to use types
+    -- specific to a particular backend
+\end{Verbatim}
+
+Meanwhile, columns are represented by the \code{PersistField} typeclass and tables are represented by the \code{PersistEntity} typeclass \cite{ybkPersistent}.
+
+\paragraph{The models file} The scaffolded Yesod site reads its Persistent configuration from the file \code{config/models}, which defines the database configuration using a Persistent DSL \cite{ybkScaffolding}. The DSL features we utilize are as follows:
+
+\begin{itemize}
+  \item \term{Tables} are represented as top-level headers with no indentation. They should be CamelCased with initial capital.
+  \item \term{Columns} are represented as lines indented under the table to which they belong. Three, space-separated fields make up a column declaration: 
+  \begin{enumerate}
+    \item The column name (camelCased with initial lowercase, for use as the name of a \code{PersistField}).
+    \item The column type, as a \code{PersistValue} constructor type.
+    \item Optionally, any additional attributes, such as \code{Maybe} to allow the column to be null.
+  \end{enumerate}
+  \item \term{Unique constraints} are represented at the same indentation level as columns, as follows:
+  \begin{enumerate}
+    \item The unique constraint name (CamelCased with initial capital).
+    \item The names of any columns to be included in the constraint, space-separated.
+    \item Optionally, the \code{force!} directive to allow a unique constraint involving a nullable column. (This is not allowed by default because Haskell and Yesod differ in their definitions of equality of null values \cite{ybkPersistent}.)
+  \end{enumerate}
+\end{itemize}
+
+\paragraph{Defining a new table}
+
+For the purposes of this project, we simply need one table that provides enough information to represent pages and, eventually, a single, unified navigation menu. Following the example of the real Sharing God's Bounty website, we represent a page as a title, a path (i.e. the relative path from the root of the site to the page), and some contents to be displayed in an article body. Meanwhile, to support menus, each page must be representable in the menu, which requires a numeric sorting order (so we can reorder pages) and a display text. The path and both menu-related fields should be nullable so that we can de-list a page completely if desired, making it entirely inaccessible to the public.
+
+We complete our design with two unique constraints. First, no two pages should be allowed to have the same path, though this might be perfectly plausible under a different site architecture. Seecond, no two pages should be allowed to have the same numeric menu order.
+
+These design specifications allow us to produce a full model in the Persistent DSL:
+
+\begin{Verbatim}
+BasicPage
+    title Text                        -- The title of the page
+    path Text Maybe                   -- The path to the page (nullable)
+    menuOrder Int64 Maybe             -- The numeric order of the page in the menu (nullable)
+    menuText Text Maybe               -- The text of the page's menu entry (nullable)
+    content Text                      -- The page's body content
+    UniquePath path !force            -- The path must be unique but may still be null
+    UniqueMenuOrder menuOrder !force  -- The menu order must be unique but may still be null
+\end{Verbatim}
+
+\paragraph{Migrating the schema} For the uninitiated, database migrations are a standard notion of capturing changes to the database schema in a programmatic and reproducible way. In Ruby on Rails, we write migrations manually (or use a command-line utility to generate both our skeletal models and skeletal migrations). Yesod goes at least one step further: it automatically generates and runs migrations, when it's safe to do so, by comparing the Persistent schema to the database schema \cite{ybkPersistent}. Potentially destructive migrations must be written by hand. (We avoid them to narrow the scope of this project.) Thus, all that's required to create our table and teach Yesod how to handle it safely is to create the above specification in the Persistent DSL!
+
+\paragraph{Reflections} Persistent is a bit of an odd duck. Then again, so is Ruby on Rails' ActiveRecord. I have taken issue with a number of Yesod's choices and limitations. Given that, I feel I need to highlight that my experience with Persistent has been stellar! This is the most remarkably helpful database DSL I have personally seen to date. It's cryptic at first, which is unsurprising in Yesod, but I am truly awe-struck by Persistent's expressive power!
+
+Having said that, I take the same issue with Persistent that I take with ActiveRecord. Both DSLs attempt to solve the database problem space entirely in their host languages. In doing so, both DSLs take reductive views of databases that belie the power of a full-fledged DBMS. Both DSLs are well-suited to simple data stores like SQLite. As a SQL-literate developer, though, I prefer to take full advantage of a highly tuned, enormously powerful DBMS like Postgresql or Microsoft SQL Server. It is my personal opinion that when using a fully featured DBMS to its full advantage, a heavy-handed database abstraction layer simply gets in the way. Perhaps Persistent might work well in this use case with its migrations disabled (and without utilizing unique constraints), but I have my doubts. In either case, this particular query is well beyond the scope of this project.
+

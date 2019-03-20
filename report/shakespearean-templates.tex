@@ -16,7 +16,7 @@ All of Yesod's DSLs provide a common set of interpolation features:
   \item \term{Template interpolation} We can embed templates in other templates by writing \code{\^{}\{templateName\}}. This is safe in that it only allows embedding of templates of the same type and, of course, provides all the usual compile-time guarantees for both templates. (See the \nameref{luciusMixins} section for more.)
 \end{itemize}
 
-\subsection{Hamlet}
+\subsection{Hamlet} \label{hamlet}
 
 Yesod uses Hamlet as its HTML DSL. Hamlet is similar to HTML, with a few distinguishing features.
 
@@ -24,7 +24,7 @@ Yesod uses Hamlet as its HTML DSL. Hamlet is similar to HTML, with a few disting
 
 \paragraph{Class and ID shorthand} Hamlet templates provide shorthand for specifying classes and IDs by prefacing a class or ID name with a \code{.} or a \code{\#}, respectively. This shorthand even works with multiple classes, by writing either \code{<div .foo .bar>} or \code{<div ."foo bar">}. Either form generates the final HTML \code{<div class="foo bar"></div>}. To be honest, I tried these forms with the intention of exposing a shortcoming of Hamlet, and I was shocked to see that it handled both cases beautifully!
 
-\paragraph{Example} To see these features in action, let's take a look at my mobile navigation menu. The Hamlet representation is as follows: \todo{UPDATE THIS EXAMPLE with the ``final'' version! It'll be WAY more impressive!}
+\paragraph{Example} To see these features in action, let's take a look at my skeletal mobile navigation menu. The Hamlet representation is as follows: 
 
 \begin{Verbatim}
 <nav .mobile>

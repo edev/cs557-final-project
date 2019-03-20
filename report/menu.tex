@@ -1,0 +1,43 @@
+\section{Adding menus}
+
+Our \code{BasicPage} database table and its associated Haskell type have the three key fields we need in order to represent a site navigation menu: paths, titles, and numeric orders for all pages. All three are optional so that we can remove pages from the Web as needed. (We use this on the live Bounty site for Christmas event pages, for instance.) Having gained experience writing Persistent code, handlers, and Hamlet, we now turn our attention to one, final feature for this project: adding the site navigation menu.
+
+Given the work already done, adding a menu is actually remarkably simple (although getting the code exactly right is challenging the first time, since the Yesod book assumes a lot of unstated but important details about, e.g., where to place certain code or what TemplateHaskell is generated for various data types). We place our code in the \code{defaultLayout} function definition in \code{src/Foundation.hs}, since the menu must be defined for any page that uses this layout (otherwise the template will not compile). The first step is to retrieve a list of menu items from the database (sorted by menu order) and unpack it from the monad that \code{runDB} returns:
+
+\begin{Verbatim}
+pageList <- runDB (selectList [] [Asc BasicPageMenuOrder])
+\end{Verbatim}
+
+Next, we need to process the results in a few ways. First, we only want pages where the path, menu text, and menu order are all non-null. Second, we only actually need the path and menu text of each page. A somewhat advanced list comprehension can take care of this for us:
+
+\begin{Verbatim}
+let menuItems = 
+      [(pagePath, title) 
+        | (Entity _ 
+                 (BasicPage _ 
+                            (Just pagePath) 
+                            order
+                            (Just title) 
+                            _)) <- pageList,
+          order /= Nothing]
+\end{Verbatim}
+
+by using \code{(Just pagePath)} and \code{(Just title)}, we automatically filter out any \code{Nothing} values for these fields and unpack the values from these \code{Maybe} types at the same time. We take a different approach for \code{order} because we don't need to store this value and we don't want GHC to warn us that it's an unused value; instead, we simply retrieve it, guard against \code{Nothing} values, and throw it away.
+
+Finally, in \code{templates/default-template.hamlet}, we need to add identical code to both our mobile navigation and main navigation menus. (If time allowed, we would create a new widget, but for the sake of the project, we simply insert the code directly into the template.) We replace our stubbed menus (see section \nameref{hamlet}) with Template Haskell code:
+
+\begin{Verbatim}
+<nav .mobile>
+  <ul>
+    $forall (path, title) <- menuItems
+      $with curpath <- BasicPageR (PagePath path)
+        $if Just curpath == mcurrentRoute
+          <li .current>
+            <a href=@{curpath}>#{title}
+        $else 
+          <li>
+            <a href=@{curpath}>#{title}
+\end{Verbatim}
+
+This bit of code iterates over \code{menuItems}, extracting \code{path} and \code{title} from each tuple. For each unpacked tuple, it creates a \code{BasicPageR} resource we can use to generate type-safe links. It inserts a list item and a link for each menu item, applying the \code{current} class to the list item if and only if the item's path is the current page.
+

@@ -4,7 +4,7 @@ all: dir
 dir:
 	rm -rf build
 	mkdir build
-	cp -r bibliography.bib *.tex build
+	cp -r bibliography.bib *.tex *.png build
 	cd build && pdflatex main.tex
 	cd build && biber main
 	cd build && pdflatex main.tex
