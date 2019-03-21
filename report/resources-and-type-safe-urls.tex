@@ -4,19 +4,19 @@ One of the first concepts we need to discuss in Yesod, and one of the clearest e
 
 The most fundamental term here, one which Yesod shares with many other Web frameworks, is the \term{route}, which is a mapping from a URI to server-side code. To represent routes, Yesod uses what it calls resources. A \term{resource} is a \code{data} constructor that acts as the canonical name of the route in views \cite{ybk}. For instance, the default site scaffold includes a static route of the form:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 /static StaticR Static appStatic
 \end{Verbatim}
 
 This line specifies a \code{/static} route, a resource constructor named \code{StaticR} as the name of the route, and a subsite named \code{Static} whose function \code{appStatic} will handle requests on this route \cite{ybkRouting}. In order to create a link to a static file, e.g. an image served as part of a template, we invoke the \code{StaticR} constructor with an appropriate argument. The \code{Static} subsite generates ``static file identifiers`` at compile time \cite{ybkScaffolding}. When we insert a link using a resource constructor:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 <img ... src="@{StaticR img_logo_png}" ... />
 \end{Verbatim}
 
 Yesod generates a correct link to the static resource at compile-time. In this case, the user's browser receives:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 <img ... src="http://localhost:3000/static/img/logo.png?etag=GVVUzjtL" ... />
 \end{Verbatim}
 
@@ -26,13 +26,13 @@ There are two primary benefits to this approach, both of which leverage Haskell 
 
 \paragraph{Check links at compile time} Yesod uses resources to generate correct links at compile-time, which allows it to check whether said links are valid and raise compile-time errors if any problems are detected. In this case, the Static subisite checks the identifier \code{img\_logo\_png} against all generated static file identifiers. If it finds a match, it inserts the correct link. If not, then GHC raises an error. For instance, if we mistakenly specify a JPG logo:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 <img ... src="@{StaticR img_logo_jpg}" ... />
 \end{Verbatim}
 
 GHC detects the issue for us and (rather obtusely) notifies us of the issue with a compile-time error:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
     • Variable not in scope: img_logo_jpg :: Route Static
     • Perhaps you meant ‘img_logo_png’ (imported from Import.NoFoundation)
     |
@@ -44,13 +44,13 @@ In effect, Yesod automatically tests every internal link at compile time, withou
 
 \paragraph{Refactor routes with confidence} Generating links at compile time also eliminates an entire class of common and nefarious errors: broken links. Updating or moving routes is a common occurrence in Web application development, even with careful planning. Yesod makes this safe and automatic by generating all such links from resource constructors at compile time. To change the route across the entire application, all we need to do is change the route definition:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 /dynamic StaticR Static appStatic
 \end{Verbatim}
 
 And all of our generated links to that route automatically update when we recompile:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 <img ... src="http://localhost:3000/dynamic/img/logo.png?etag=GVVUzjtL" ... />
 \end{Verbatim}
 

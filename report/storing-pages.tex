@@ -6,7 +6,7 @@ Now that we've covered most of the basics, we can look at adding new features to
 
 Our first order of business is to learn enough about Persistent, Yesod's database abstraction layer \cite{ybkPersistent}, to create a new table. Persistent leverages Haskell data types to provide myriad type-safety guarantees going both to and from a backing store (in our case, SQLite). Persistent defines a sum type, \code{PersistValue}, whose constructors map to supported value types we can store in the database. The Yesod book defines \code{PersistValue} as follows \cite{ybkPersistent}:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 data PersistValue
     = PersistText Text
     | PersistByteString ByteString
@@ -43,19 +43,19 @@ Meanwhile, columns are represented by the \code{PersistField} typeclass and tabl
   \begin{enumerate}
     \item The unique constraint name (CamelCased with initial capital).
     \item The names of any columns to be included in the constraint, space-separated.
-    \item Optionally, the \code{force!} directive to allow a unique constraint involving a nullable column. (This is not allowed by default because Haskell and Yesod differ in their definitions of equality of null values \cite{ybkPersistent}.)
+    \item Optionally, the \code{force!} directive to allow a unique constraint involving a nullable column. (This is not allowed by default because Haskell and SQL differ in their definitions of equality of null values \cite{ybkPersistent}.)
   \end{enumerate}
 \end{itemize}
 
 \paragraph{Defining a new table}
 
-For the purposes of this project, we simply need one table that provides enough information to represent pages and, eventually, a single, unified navigation menu. Following the example of the real Sharing God's Bounty website, we represent a page as a title, a path (i.e. the relative path from the root of the site to the page), and some contents to be displayed in an article body. Meanwhile, to support menus, each page must be representable in the menu, which requires a numeric sorting order (so we can reorder pages) and a display text. The path and both menu-related fields should be nullable so that we can de-list a page completely if desired, making it entirely inaccessible to the public.
+For the purposes of this project, we simply need one table that provides enough information to represent pages and, eventually, a single, unified navigation menu. Following the example of the real Sharing God's Bounty website, we represent a page as a title, a path (i.e. the relative path from the root of the site to the page), and some contents to be displayed in an article body. Meanwhile, to support menus, each page must be representable in the menu, which requires a numeric sorting order (so we can reorder pages) and some display text. The path and both menu-related fields should be nullable so that we can de-list a page completely if desired, making it entirely inaccessible to the public.
 
 We complete our design with two unique constraints. First, no two pages should be allowed to have the same path, though this might be perfectly plausible under a different site architecture. Seecond, no two pages should be allowed to have the same numeric menu order.
 
 These design specifications allow us to produce a full model in the Persistent DSL:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 BasicPage
     title Text                        -- The title of the page
     path Text Maybe                   -- The path to the page (nullable)

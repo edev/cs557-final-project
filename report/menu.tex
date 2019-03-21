@@ -4,13 +4,13 @@ Our \code{BasicPage} database table and its associated Haskell type have the thr
 
 Given the work already done, adding a menu is actually remarkably simple (although getting the code exactly right is challenging the first time, since the Yesod book assumes a lot of unstated but important details about, e.g., where to place certain code or what TemplateHaskell is generated for various data types). We place our code in the \code{defaultLayout} function definition in \code{src/Foundation.hs}, since the menu must be defined for any page that uses this layout (otherwise the template will not compile). The first step is to retrieve a list of menu items from the database (sorted by menu order) and unpack it from the monad that \code{runDB} returns:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 pageList <- runDB (selectList [] [Asc BasicPageMenuOrder])
 \end{Verbatim}
 
 Next, we need to process the results in a few ways. First, we only want pages where the path, menu text, and menu order are all non-null. Second, we only actually need the path and menu text of each page. A somewhat advanced list comprehension can take care of this for us:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 let menuItems = 
       [(pagePath, title) 
         | (Entity _ 
@@ -22,11 +22,11 @@ let menuItems =
           order /= Nothing]
 \end{Verbatim}
 
-by using \code{(Just pagePath)} and \code{(Just title)}, we automatically filter out any \code{Nothing} values for these fields and unpack the values from these \code{Maybe} types at the same time. We take a different approach for \code{order} because we don't need to store this value and we don't want GHC to warn us that it's an unused value; instead, we simply retrieve it, guard against \code{Nothing} values, and throw it away.
+By using \code{(Just pagePath)} and \code{(Just title)}, we automatically filter out any \code{Nothing} values for these fields and unpack the values from these \code{Maybe} types at the same time. We take a different approach for \code{order} because we don't need to store this value and we don't want GHC to warn us that it's an unused value; instead, we simply retrieve it, guard against \code{Nothing} values, and throw it away.
 
 Finally, in \code{templates/default-template.hamlet}, we need to add identical code to both our mobile navigation and main navigation menus. (If time allowed, we would create a new widget, but for the sake of the project, we simply insert the code directly into the template.) We replace our stubbed menus (see section \nameref{hamlet}) with Template Haskell code:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 <nav .mobile>
   <ul>
     $forall (path, title) <- menuItems

@@ -20,13 +20,13 @@ Yesod breaks routes into pieces, delimited by \code{/}, and parses them using da
 
 Our route itself is conceptually very simple: it will attempt to match any page that has not already matched a route against the known paths in our new database table. We'll use a multi-piece to allow pages to nest as needed, and we'll name our resource after the \code{BasicPath} table. Since only the \code{GET} HTTP method makes sense here, we will restrict our route to that method:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 !/*PagePath BasicPageR GET
 \end{Verbatim}
 
-The Yesod book does not precisely describe where to place our definition for \code{PagePath}'s membership in the \code{PathPiece} typeclass, but perhaps GHC can help us out. By running the application with the route (but without a handler or a definition for \code{instance PagePath PathPiece}), we can see where the definition is needed and make an educated guess about where it might belong. Sure enough, we see a helpful error (edited for clarity):
+The Yesod book does not precisely describe where to place our definition for \code{PagePath}'s membership in the \code{PathPiece} typeclass, but perhaps GHC can help us out. By running the application with the route (but without a handler or a definition for \code{instance PathMultiPiece PagePath}), we can see where the definition is needed and make an educated guess about where it might belong. Sure enough, we see a helpful error (edited for clarity):
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 [ 6 of 12] Compiling Foundation       ( src/Foundation.hs, ...)
 
 src/Foundation.hs:68:1: error:
@@ -39,11 +39,13 @@ src/Foundation.hs:68:1: error:
 
 Following the Yesod book's example \cite{ybkRouting}, we define our own \code{PagePath} type and define its instantiation into \code{PathMultiPiece} (as well as a few base classes), and we place the definition at the bottom of \code{src/Foundation.hs}:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 -- Define the PagePath type needed for our BasicPageR route.
 newtype PagePath = PagePath Text
   deriving (Eq, Show, Read)
+\end{Verbatim}
 
+\begin{Verbatim}[samepage=true]
 -- Define converstions between PathPath and Text.
 instance PathMultiPiece PagePath where
   -- toPathMultiPiece converts from a PagePath to [Text].
@@ -67,8 +69,9 @@ instance PathMultiPiece PagePath where
       "/" -> []
       ('/':rest) -> T.splitOn "/" (T.pack rest)
       _ -> T.splitOn "/" p
-        
+\end{Verbatim}
 
+\begin{Verbatim}[samepage=true]
   -- fromPathPiece converts from [Text] to a PagePath.
   -- We could query the database here to verify that
   -- the path exists, but that functionality is best
@@ -88,7 +91,7 @@ instance PathMultiPiece PagePath where
 
 To verify that our links work correctly, we provide a temporary, initial handler that simply displays the parsed \code{PagePath} in the body of our templated page:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 getBasicPageR :: PagePath -> Handler Html
 getBasicPageR (PagePath path) = defaultLayout $ do
       case path of
@@ -98,13 +101,13 @@ getBasicPageR (PagePath path) = defaultLayout $ do
 
 Sure enough, visiting \code{localhost:3000} produces a beautiful Bounty webpage with the body text:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 Home page: /
 \end{Verbatim}
 
 And visiting \code{http://localhost:3000/abc/def} produces the body text:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 Path: /abc/def
 \end{Verbatim}
 
@@ -114,7 +117,7 @@ Now we can add database interactivity as part of a real handler.
 
 Our route handler, in \code{src/Handler/BasicPage.hs}, is as follows:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
@@ -144,18 +147,18 @@ Let's talk about each part in a bit more detail.
 
 First, we use the \code{getBy} function from Persistent to retrieve a page by its path. The \code{getBy} function accepts a unique constraint as its sole argument. From this argument, it infers the needed data types, the table to check, and the column(s) to check. (Ah, the power of the Haskell type system!) In loose terms, it takes variadic arguments: it accepts a unique constraint value, but that value's constructor may require arbitrary arguments. We wrap it in \code{runDB}, which is a convenience function the Yesod scaffolded site provides to pull from a pool of database connections.
 
-Next, we unpack the \code{Maybe (Entity BasicPageId BasicPage)} value we received. If it's \code{Nothing}, the database had no matching row, so we simply use the \code{notFound} helper to terminate our handler with an appropriate response. If we did receive a matching row, then we unpack the fields we need (namely \code {title} and \code{content}), create a widget with those names in scope, and pass the widget into the \code{defaultLayout} renderer.
+Next, we unpack the \code{Maybe (Entity BasicPageId BasicPage)} value we received. If it's \code{Nothing}, the database had no matching row, so we simply use the \code{notFound} helper to terminate our handler with an appropriate response. If we did receive a matching row, then we unpack the fields we need (namely \code {title} and \code{content}), create a widget with those names in-scope, and pass the widget into the \code{defaultLayout} renderer.
 
 A \term{widget} is a key concept we skipped previously, but in very brief form, it's comprised of snippets of Hamlet, Lucius, Cassius, and/or Julius code, packed together in a format that Yesod is able to handle intelligently as a single unit. In our case, we just need an exceptionally simple \code{templates/basicpage.hamlet} file:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 <h1>#{title}
 #{content}
 \end{Verbatim}
 
 This renders the body of any given page as a widget, using the values we unpacked from the database. When in the default template we invoke:
 
-\begin{Verbatim}
+\begin{Verbatim}[samepage=true]
 ^{widget}
 \end{Verbatim}
 
